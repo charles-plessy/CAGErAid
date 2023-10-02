@@ -18,4 +18,5 @@ quickGFF <-
     gff$type <- as.character(gff$type)
     gff <- gff[gff$type %in% types]
     gff$gene_name <- gff$gene_id
+    gff
   }
