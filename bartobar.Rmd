@@ -37,16 +37,16 @@ pathsToInputFiles <- list.files(pathToBamFiles,
 sampleLabels <- make.names(sub( ".sorted.bam", "", basename(pathsToInputFiles)))
 ce <-
   CAGEexp( metadata = list(genomeName = BSgenomeToUse)
-         , colData  = DataFrame( inputFiles     = pathsToInputFiles[1:8]
-                               , sampleLabels   = sampleLabels[1:8]
+         , colData  = DataFrame( inputFiles     = pathsToInputFiles[1:4]
+                               , sampleLabels   = sampleLabels[1:4]
                                , inputFilesType = "bamPairedEnd"
-                               , row.names      = sampleLabels[1:8]))
+                               , row.names      = sampleLabels[1:4]))
 
-ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 8, correctSystematicG=FALSE, removeFirstG=FALSE)
+ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 4, correctSystematicG=FALSE, removeFirstG=FALSE)
 colData(ce)
 ```
 
-Polish the sample data and fixing sample names
+Polish the sample data and fix sample names
 ```{r polish samples and fix sample names}
 ce$SLfound  <- grepl('SL', sampleLabels(ce))
 ce$SLfactor <- ce$SLfound |> 
@@ -118,17 +118,18 @@ seqNameTotalsSE(ce) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap()
 # Distributions of expression values differ strongly between the trans-splicing sites and the transcription start sites.  We will need to normalise them separately.
 ce <- setColors(
   ce,
-  c(
-    "red",
-    "red",
-    "red",
-    "red",
-    "blue",
-    "blue",
-    "pink",
-    "pink",
-    "pink",
-    "pink"#,
+  c('red', 'pink', 'blue', 'lightblue')
+  # c(
+    # "red",
+    # "red",
+    # "red",
+    # "red",
+    # "blue",
+    # "blue",
+    # "pink",
+    # "pink",
+    # "pink",
+    # "pink",
     # "green",
     # "green",
     # "green",
@@ -137,20 +138,23 @@ ce <- setColors(
     # "green",
     # "green",
     # "green"
-  )
+  # )
 )
 
 plotReverseCumulatives(ce, fitInRange = c(1e3, 1e5),
                        values = "raw",
-                       onePlot = F,
-                       group = 'SLfactor') +
+                       onePlot = F) + #,
+                       # group = 'SLfactor') +
   theme(plot.title = element_text(size = 10))
 ```
 
 ```{r export unclustered data to bed and/or bw}
 # bed
 ce <- normalizeTagCount(ce)
+# exportToTrack was working before, I'm not sure what goes wrong
 trks <- exportToTrack(ce, oneTrack = FALSE)
+# Error in `[[<-`(`*tmp*`, name, value = logical(0)) : 
+#   0 elements in value to replace 465992 elements
 for (n in seq_along(trks)) {
   name <- sampleLabels(ce)[n]
   rtracklayer::export.bed(trks[n], paste0(name, ".ctss.bed.gz"))
@@ -212,8 +216,8 @@ p2_no <-
   theme_bw()
 
 # doesn't work, not sure why
-(p1_sl | p2_sl) + plot_layout(guides = 'collect')
-(p1_no | p2_no) + plot_layout(guides = 'collect')
+# (p1_sl | p2_sl) + plot_layout(guides = 'collect')
+# (p1_no | p2_no) + plot_layout(guides = 'collect')
 
 
 ```
@@ -239,6 +243,7 @@ cctrack_sl$itemRgb <- ifelse(flagByUpstreamSequences(rowRanges(consensusClusters
 cctrack_sl[cctrack_sl$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
 cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
 
+# cctrack_sl <- makeBed(ce_sl, TRUE)
 rtracklayer::export.bed(cctrack_sl, "clusters_sl.bed")
 
 
@@ -249,6 +254,8 @@ cctrack_no@trackLine@name <- "TSS"
 # Flat the clusters of width 1.
 cctrack_no$itemRgb <- ifelse(width(cctrack_no) > 1, "black", "grey")
 
+
+# cctrack_no <- makeBed(ce_no, FALSE)
 rtracklayer::export.bed(cctrack_no, "clusters_no.bed")
 
 ```
