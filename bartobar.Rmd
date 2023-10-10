@@ -251,6 +251,5 @@ cctrack_no$itemRgb <- ifelse(width(cctrack_no) > 1, "black", "grey")
 
 rtracklayer::export.bed(cctrack_no, "clusters_no.bed")
 
-# makeBed(ce_no, FALSE)
 ```
 
