@@ -17,5 +17,6 @@ Imports:
     CAGEr,
     graphics,
     rtracklayer,
+    S4Vectors,
     SummarizedExperiment,
     utils
