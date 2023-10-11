@@ -2,8 +2,7 @@
 % Please edit documentation in R/quickClustersNO.R
 \name{quickClustersNO}
 \alias{quickClustersNO}
-\title{Quickly clusters CTSSs in data from samples without splice leader detected with established parameters.
-For clustering CTSSs in samples with splice leader found, use \link[CAGErAid]{quickClustersSL}.}
+\title{Clusters CTSSs for samples without splice leader}
 \usage{
 quickClustersNO(ce, aggregate = FALSE, gff = NULL)
 }
@@ -18,11 +17,13 @@ quickClustersNO(ce, aggregate = FALSE, gff = NULL)
 CAGEexp object
 }
 \description{
+Quickly clusters CTSSs in data from samples without splice leader detected with established parameters.
+For clustering CTSSs in samples with splice leader found, use \code{\link[=quickClustersSL]{quickClustersSL()}}.
+
 The method for clustering CTSSs is distclu, and by default the algorithm uses 4 cores.
-}
-\details{
+
 Optional aggregating tags is possible with aggregate = TRUE, at which the user needs to provide a GFF file.
-For easy processing of gff files use \link[CAGErAid]{quickGFF}.
+For easy processing of gff files use \code{\link[=quickGFF]{quickGFF()}}.
 }
 \examples{
 \dontrun{

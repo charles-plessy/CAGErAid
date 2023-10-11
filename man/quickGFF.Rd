@@ -2,7 +2,7 @@
 % Please edit documentation in R/quickGFF.R
 \name{quickGFF}
 \alias{quickGFF}
-\title{Quickly imports and processes a GFF object as a character vector for use in annotating CAGEexp objects}
+\title{Import a GFF easily}
 \usage{
 quickGFF(gff_path, types = c("transcript", "intron", "exon"))
 }

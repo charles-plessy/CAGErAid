@@ -21,7 +21,8 @@ library('pheatmap')
 library('BSgenome')
 library('patchwork')
 library('devtools')
-install_github('a-klarkowska/CAGErAid')
+# install_github('a-klarkowska/CAGErAid')
+library('CAGErAid')
 ```
 
 # Load the CAGE data from BAM files.
@@ -42,7 +43,8 @@ ce <-
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels[1:4]))
 
-ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 4, correctSystematicG=FALSE, removeFirstG=FALSE)
+# ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 4, correctSystematicG=FALSE, removeFirstG=FALSE)
+ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
 colData(ce)
 ```
 

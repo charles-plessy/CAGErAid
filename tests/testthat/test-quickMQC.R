@@ -5,5 +5,7 @@ test_that("quickMQC works", {
   qc <- read.table(head = TRUE,
                    sep = '\t',
                    '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_general_stats.txt')
-  expect_equal(quickMQC(ce, hs, qc)$rdna[3], 17583282)
+  expect_equal(quickMQC(ce, guess_path = FALSE, hs, qc)$rdna[3], 17583282)
+  expect_equal(quickMQC(ce)$rdna[3], 17583282)
+
 })

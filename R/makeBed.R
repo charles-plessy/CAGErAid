@@ -1,4 +1,5 @@
-#' Exports clusters from CAGEexp objects containing splice leader or splice leader removed data to black and white bed tracks.
+#' Exports clusters from CAGEexp object
+#' @description Exports clusters from CAGEexp objects containing splice leader or splice leader removed data to black and white bed tracks.
 #' For clusters, call \link[CAGErAid]{quickClustersSL} or \link[CAGErAid]{quickClustersNO}.
 #'
 #' @param ce CAGEexp object
@@ -28,7 +29,7 @@ makeBed <- function(ce, sl_found){
     cctrack_sl@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
     cctrack_sl@trackLine@name <- "sl"
     # Flat AG
-    cctrack_sl$itemRgb <- ifelse(CAGEr:::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
+    cctrack_sl$itemRgb <- ifelse(CAGEr::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
 
     cctrack_sl[cctrack_sl$itemRgb == "black"] |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)
     cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)

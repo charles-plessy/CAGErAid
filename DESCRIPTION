@@ -14,7 +14,6 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
-    BSgenome,
     CAGEr,
     graphics,
     rtracklayer,

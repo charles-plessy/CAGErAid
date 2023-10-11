@@ -2,8 +2,7 @@
 % Please edit documentation in R/makeBed.R
 \name{makeBed}
 \alias{makeBed}
-\title{Exports clusters from CAGEexp objects containing splice leader or splice leader removed data to black and white bed tracks.
-For clusters, call \link[CAGErAid]{quickClustersSL} or \link[CAGErAid]{quickClustersNO}.}
+\title{Exports clusters from CAGEexp object}
 \usage{
 makeBed(ce, sl_found)
 }

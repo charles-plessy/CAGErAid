@@ -6,7 +6,7 @@ test_that("clustering works with aggregation on noSL data", {
                    sep = '\t',
                    '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_general_stats.txt')
   gff <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
-  ce <- CAGErAid::quickMQC(ce, hs, qc)
+  ce <- CAGErAid::quickMQC(ce, guess_path = FALSE, hs, qc)
   test_cluster <- readRDS('~/R/test_quickClusterNOdata.rds')
   ce_NO <- ce[, !ce$SLfound]
 

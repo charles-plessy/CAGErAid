@@ -1,4 +1,5 @@
-#' Quickly imports and processes a GFF object as a character vector for use in annotating CAGEexp objects
+#' Import a GFF easily
+#' @description Quickly imports and processes a GFF object as a character vector for use in annotating CAGEexp objects
 #'
 #' @param gff_path path to a GFF file
 #' @param types types of features of interest

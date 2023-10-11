@@ -2,18 +2,26 @@
 % Please edit documentation in R/quickMQC.R
 \name{quickMQC}
 \alias{quickMQC}
-\title{Imports Hisat2 QC (multiqc_hisat2.txt) and general QC data (multiqc_general_stats.txt) and writes it into the CAGEexp object}
+\title{Imports QC data}
 \usage{
-quickMQC(ce, hisat, qc, check_multimap = FALSE)
+quickMQC(
+  ce,
+  guess_path = TRUE,
+  hisat = NULL,
+  qc = NULL,
+  check_multimap = FALSE
+)
 }
 \arguments{
 \item{ce}{CAGEexp object}
+
+\item{guess_path}{boolean, if TRUE, checks if the multiqc_hisat2.txt and multiqc_general_stats.txt paths can be inferred from the input files in the CAGEexp object}
 
 \item{hisat}{table with multiqc_hisat2.txt data}
 
 \item{qc}{table with multiqc_general_stats.txt data}
 
-\item{check_multimap}{optional; checks if all reads have been removed by the pipeline}
+\item{check_multimap}{boolean, checks if all reads have been removed by the pipeline}
 }
 \value{
 CAGEexp object
@@ -23,7 +31,7 @@ Imports Hisat2 QC (multiqc_hisat2.txt) and general QC data (multiqc_general_stat
 }
 \examples{
 \dontrun{
-quickMQC(ce, hisat, qc, check_multimap = TRUE)
+quickMQC(ce, hisat, qc, check_multimap = TRUE, guess_path = FALSE)
 }
 
 }
