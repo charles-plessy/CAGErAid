@@ -12,8 +12,6 @@
 #'
 #'
 #' @export
-#'
-#'
 msScope_nfcore_rnaseq <- function(libs) {
   libs$rDNA           <- libs$rdna
   libs$Unmapped       <-

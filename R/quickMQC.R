@@ -10,12 +10,13 @@
 #' @importFrom CAGEr sampleLabels
 #' @importFrom CAGEr librarySizes
 #' @importFrom utils read.table
-#' @export
 #'
 #' @examples
 #' \dontrun{
 #' quickMQC(ce, hisat, qc, check_multimap = TRUE)
 #' }
+#'
+#' @export
 quickMQC <- function(ce, hisat, qc, check_multimap = FALSE) {
   rownames(hisat) <- make.names(hisat$Sample)
   hisat <- hisat[CAGEr::sampleLabels(ce), ]

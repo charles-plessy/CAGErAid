@@ -6,13 +6,13 @@
 #'
 #' @return CAGEexp object
 #' @importFrom CAGEr sampleLabels
-#' @export
 #'
 #' @examples
 #' \dontrun{
 #' mqcGenstats(ce, qc)
 #' }
 #'
+#' @export
 mqcGenstats <- function(ce, qc) {
   rownames(qc) <- make.names(qc$Sample)
   qc2.df <- qc[paste0(CAGEr::sampleLabels(ce), '_2'), ]

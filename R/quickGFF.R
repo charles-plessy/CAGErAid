@@ -5,12 +5,12 @@
 #'
 #' @return GRanges object with selected features
 #' @importFrom rtracklayer import
-#' @export
 #'
 #' @examples
 #' \dontrun{
 #' quickGFF('barcelona.gff', types = c('intron', 'exon'))
 #' }
+#' @export
 quickGFF <-
   function(gff_path,
            types = c('transcript', 'intron', 'exon')) {

@@ -23,5 +23,4 @@ Imports Hisat2 QC data (multiqc_hisat2.txt) and writes it into the CAGEexp objec
 \dontrun{
 mqcHisat2(ce, hisat, check_multimap = TRUE)
 }
-
 }

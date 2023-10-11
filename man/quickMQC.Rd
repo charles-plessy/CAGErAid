@@ -25,4 +25,5 @@ Imports Hisat2 QC (multiqc_hisat2.txt) and general QC data (multiqc_general_stat
 \dontrun{
 quickMQC(ce, hisat, qc, check_multimap = TRUE)
 }
+
 }

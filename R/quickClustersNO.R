@@ -17,12 +17,13 @@
 #' @importFrom CAGEr quantilePositions
 #' @importFrom CAGEr aggregateTagClusters
 #' @importFrom CAGEr annotateConsensusClusters
-#' @export
+#'
 #'
 #' @examples
 #' \dontrun{
 #' quickClustersNO(ce, aggregate = TRUE, gff)
 #' }
+#' @export
 quickClustersNO <- function(ce, aggregate = FALSE, gff = NULL) {
   if (aggregate == FALSE) {
     ce <- ce |>
