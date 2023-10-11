@@ -28,7 +28,7 @@ makeBed <- function(ce, sl_found){
     cctrack_sl@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
     cctrack_sl@trackLine@name <- "sl"
     # Flat AG
-    cctrack_sl$itemRgb <- ifelse(CAGEr::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
+    cctrack_sl$itemRgb <- ifelse(CAGEr:::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
 
     cctrack_sl[cctrack_sl$itemRgb == "black"] |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)
     cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)
