@@ -26,7 +26,7 @@ You can install the development version of CAGErAid from [GitHub](https://github
 
 ```{r}
 # install.packages("devtools")
-devtools::install_github('a-klarkowska/CAGErAid') |> suppressMessages()
+devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
 ```
 
 ## Polishing data
@@ -38,7 +38,8 @@ After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we 
 library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
-ce <- readRDS('data/ce_clean.rds')
+ce_path <- system.file("extdata", "ce_clean.rds", package="CAGErAid")
+ce <- readRDS(ce_path)
 
 ```
 
@@ -56,7 +57,8 @@ To easily annotate data, we can use `quickGFF()`.
 
 ```{r annotation}
 
-gff <- quickGFF('data/Barcelona.gtf', types = c('transcript', 'exon'))
+gff_path <- system.file('extdata', 'Barcelona.gtf', package = 'CAGErAid')
+gff <- quickGFF(gff_path, types = c('transcript', 'exon'))
 ce <- CAGEr::annotateCTSS(ce, gff)
 
 ```

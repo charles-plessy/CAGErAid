@@ -18,10 +18,11 @@ You can install the development version of CAGErAid from
 
 ``` r
 # install.packages("devtools")
-devtools::install_github('a-klarkowska/CAGErAid') |> suppressMessages()
-#> 
+devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
+#> Downloading GitHub repo a-klarkowska/CAGErAid@HEAD
+#> Skipping 4 packages not available: SummarizedExperiment, S4Vectors, rtracklayer, BiocGenerics
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpFQGu4Y/remotes346c42395bc943/a-klarkowska-CAGErAid-d125107/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpSXiZV1/remotese768c13718111/a-klarkowska-CAGErAid-96ef118/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -31,8 +32,10 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressMessages()
 #>   WARNING: Added dependency on R >= 3.5.0 because serialized objects in
 #>   serialize/load version 3 cannot be read in older versions of R.
 #>   File(s) containing such objects:
-#>     ‘CAGErAid/data/ce_clean.rds’
+#>     ‘CAGErAid/data/ce_clean.rds’ ‘CAGErAid/inst/extdata/ce_clean.rds’
 #> * building ‘CAGErAid_0.0.0.9000.tar.gz’
+#> Installing package into '/tmp/RtmpdjU68m/temp_libpath2fd6ac12b62bb6'
+#> (as 'lib' is unspecified)
 ```
 
 ## Polishing data
@@ -49,7 +52,8 @@ and `quickMQC()`.
 library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
-ce <- readRDS('data/ce_clean.rds')
+ce_path <- system.file("extdata", "ce_clean.rds", package="CAGErAid")
+ce <- readRDS(ce_path)
 ```
 
 The CAGEexp file could use some polishing on the sample names and a
@@ -69,6 +73,7 @@ To easily annotate data, we can use `quickGFF()`.
 
 ``` r
 
-gff <- quickGFF('data/Barcelona.gtf', types = c('transcript', 'exon'))
+gff_path <- system.file('extdata', 'Barcelona.gtf', package = 'CAGErAid')
+gff <- quickGFF(gff_path, types = c('transcript', 'exon'))
 ce <- CAGEr::annotateCTSS(ce, gff)
 ```
