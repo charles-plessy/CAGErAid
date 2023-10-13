@@ -22,7 +22,11 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> Downloading GitHub repo a-klarkowska/CAGErAid@HEAD
 #> Skipping 4 packages not available: SummarizedExperiment, S4Vectors, rtracklayer, BiocGenerics
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
+<<<<<<< HEAD
 #> * checking for file ‘/tmp/RtmpSXiZV1/remotese768c13718111/a-klarkowska-CAGErAid-96ef118/DESCRIPTION’ ... OK
+=======
+#> * checking for file ‘/tmp/Rtmpi5KExr/remotesedd9f3622a387/a-klarkowska-CAGErAid-80614c8/DESCRIPTION’ ... OK
+>>>>>>> a4330eb (README fixes)
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
