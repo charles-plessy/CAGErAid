@@ -21,7 +21,7 @@ You can install the development version of CAGErAid from
 devtools::install_github('a-klarkowska/CAGErAid') |> suppressMessages()
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/Rtmp8dksXo/remotesf116ec0193eb/a-klarkowska-CAGErAid-812903c/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpFQGu4Y/remotes346c42395bc943/a-klarkowska-CAGErAid-d125107/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -50,14 +50,6 @@ library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
 ce <- readRDS('data/ce_clean.rds')
-SummarizedExperiment::colData(ce)
-#> DataFrame with 4 rows and 4 columns
-#>                      inputFiles sampleLabels inputFilesType librarySizes
-#>                     <character>  <character>    <character>    <integer>
-#> X14FE_no /bucket/LuscombeU/li..     X14FE_no   bamPairedEnd     27248236
-#> X14FE_SL /bucket/LuscombeU/li..     X14FE_SL   bamPairedEnd     90180130
-#> X29FE_no /bucket/LuscombeU/li..     X29FE_no   bamPairedEnd     24550939
-#> X29FE_SL /bucket/LuscombeU/li..     X29FE_SL   bamPairedEnd     79057679
 ```
 
 The CAGEexp file could use some polishing on the sample names and a
@@ -71,32 +63,6 @@ ce <- ce |>
   quickPolish(reads = 'bar') |> 
   quickMQC(guess_path = TRUE, check_multimap = TRUE)
 #> [1] "Multimapped reads have been removed by the pipeline"
-SummarizedExperiment::colData(ce)
-#> DataFrame with 4 rows and 15 columns
-#>                      inputFiles sampleLabels inputFilesType librarySizes
-#>                     <character>  <character>    <character>    <integer>
-#> X14FE_no /bucket/LuscombeU/li..     X14FE_no   bamPairedEnd     27248236
-#> X14FE_SL /bucket/LuscombeU/li..     X14FE_SL   bamPairedEnd     90180130
-#> X29FE_no /bucket/LuscombeU/li..     X29FE_no   bamPairedEnd     24550939
-#> X29FE_SL /bucket/LuscombeU/li..     X29FE_SL   bamPairedEnd     79057679
-#>            SLfound     SLfactor  sampleType         RNA            Description
-#>          <logical>     <factor> <character> <character>            <character>
-#> X14FE_no     FALSE SL not found       Adult        14FE Oikopleura dioica (B..
-#> X14FE_SL      TRUE SL found           Adult        14FE Oikopleura dioica (B..
-#> X29FE_no     FALSE SL not found       Adult        29FE Oikopleura dioica (B..
-#> X29FE_SL      TRUE SL found           Adult        29FE Oikopleura dioica (B..
-#>          paired_aligned_one paired_aligned_multi paired_total realLibrarySizes
-#>                   <integer>            <integer>    <integer>        <numeric>
-#> X14FE_no           27248236               382171     34825962         65516433
-#> X14FE_SL           90180130               493855     98228663         98308339
-#> X29FE_no           24550939               329981     31714001         49299303
-#> X29FE_SL           79057679               361543     85417205         85506080
-#>          extracted      rdna
-#>          <numeric> <numeric>
-#> X14FE_no  65512902  30686940
-#> X14FE_SL  98241634     12971
-#> X29FE_no  49297283  17583282
-#> X29FE_SL  85428741     11536
 ```
 
 To easily annotate data, we can use `quickGFF()`.

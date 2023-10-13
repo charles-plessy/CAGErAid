@@ -39,7 +39,6 @@ library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
 ce <- readRDS('data/ce_clean.rds')
-SummarizedExperiment::colData(ce)
 
 ```
 
@@ -50,7 +49,6 @@ The CAGEexp file could use some polishing on the sample names and a little more 
 ce <- ce |> 
   quickPolish(reads = 'bar') |> 
   quickMQC(guess_path = TRUE, check_multimap = TRUE)
-SummarizedExperiment::colData(ce)
 
 ```
 
