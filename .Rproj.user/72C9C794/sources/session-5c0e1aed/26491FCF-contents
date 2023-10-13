@@ -1,0 +1,16 @@
+plotMapping <- function(ce) {
+  CAGEr::plotAnnot(
+    ce,
+    msScope_nfcore_rnaseq,
+    group = 'RNA',
+    facet = 'SLfactor',
+    norm = FALSE
+  ) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(plot.subtitle = element_text(size = 8, face = "italic")) +
+    ggtitle('QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+}

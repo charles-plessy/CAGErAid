@@ -1,0 +1,6 @@
+"0","# without SL
+cctrack_no <- exportToTrack(ce_no, ""consensusClusters"", qLow = 0.1, qUp = 0.9)
+"
+"2","Error in h(simpleError(msg, call)) : 
+  error in evaluating the argument 'x' in selecting a method for function 'decode': subscript contains invalid names
+"

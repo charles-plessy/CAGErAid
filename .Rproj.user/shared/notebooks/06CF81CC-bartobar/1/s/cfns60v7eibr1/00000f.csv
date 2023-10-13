@@ -1,0 +1,8 @@
+"0","library('CAGEr')"
+"0","library('ggplot2'); theme_set(theme_minimal())"
+"0","library('pheatmap')"
+"0","library('BSgenome')"
+"0","library('patchwork')"
+"0","library('devtools')"
+"0","# install_github('a-klarkowska/CAGErAid')"
+"0","library('CAGErAid')"

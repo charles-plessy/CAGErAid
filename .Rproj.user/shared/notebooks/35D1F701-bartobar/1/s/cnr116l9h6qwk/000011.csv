@@ -1,0 +1,114 @@
+"0","ce_sl <- CAGErAid::quickClustersSL(ce_sl, aggregate = T, gff)"
+"2","
+Normalizing tag count...
+"
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","
+Filtering out CTSSs below threshold...
+"
+"2","Clustering...
+"
+"2","	-> X14FE_SL
+"
+"2","	-> X29FE_SL
+"
+"2","	-> X41MA_SL
+"
+"2","	-> D1D4_SL
+"
+"2","	-> D4D5_SL
+"
+"2","
+Calculating cumulative sum of CAGE signal along clusters...
+"
+"2","	-> X14FE_SL
+"
+"2","	-> X29FE_SL
+"
+"2","	-> X41MA_SL
+"
+"2","	-> D1D4_SL
+"
+"2","	-> D4D5_SL
+"
+"2","
+Getting positions of quantiles within clusters...
+"
+"2","	-> X14FE_SL
+"
+"2","	-> X29FE_SL
+"
+"2","	-> X41MA_SL
+"
+"2","	-> D1D4_SL
+"
+"2","	-> D4D5_SL
+"
+"0","ce_no <- CAGErAid::quickClustersNO(ce_no, aggregate = T, gff)"
+"2","
+Normalizing tag count...
+"
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","
+Filtering out CTSSs below threshold...
+"
+"2","Clustering...
+"
+"2","	-> X14FE_no
+"
+"2","	-> X29FE_no
+"
+"2","	-> X41MA_no
+"
+"2","	-> D1D4_no
+"
+"2","	-> D4D5_no
+"
+"2","
+Calculating cumulative sum of CAGE signal along clusters...
+"
+"2","	-> X14FE_no
+"
+"2","	-> X29FE_no
+"
+"2","	-> X41MA_no
+"
+"2","	-> D1D4_no
+"
+"2","	-> D4D5_no
+"
+"2","
+Getting positions of quantiles within clusters...
+"
+"2","	-> X14FE_no
+"
+"2","	-> X29FE_no
+"
+"2","	-> X41MA_no
+"
+"2","	-> D1D4_no
+"
+"2","	-> D4D5_no
+"

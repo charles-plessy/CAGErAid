@@ -1,0 +1,25 @@
+quickClustersSL <- function(ce, aggregate = FALSE, gff = NULL) {
+  ce <- ce |>
+    CAGEr::normalizeTagCount(method = 'simpleTpm') |>
+    CAGEr::clusterCTSS(method = "paraclu"
+                               , nrPassThreshold = 1 # Default.  We do not have replicates for all time points
+                               , threshold = 1   # See above.  Note that it allows low-score CTSS supported in other samples.
+                               , removeSingletons = TRUE
+                               , keepSingletonsAbove = 1
+                               , maxLength = 10L # Keep them sharp
+                               , useMulticore = TRUE # Deigo
+                               , nrCores = 4) |>      # Yay !
+    CAGEr::cumulativeCTSSdistribution() |>
+    CAGEr::quantilePositions()
+  if (aggregate == TRUE & is.null(gff) == FALSE) {
+    ce <- ce |>
+      CAGEr::aggregateTagClusters(maxDist = 10L, tpmThreshold = 10, excludeSignalBelowThreshold = FALSE) |>  # See also the score distribution
+      CAGEr::cumulativeCTSSdistribution(clusters = "consensusClusters") |>
+      CAGEr::quantilePositions(clusters = "consensusClusters") |>
+      CAGEr::annotateConsensusClusters(gff, up = 100, down = 0)
+  }
+  else if (aggregate == TRUE & is.null(gff) == TRUE) {
+    print('Missing GFF, skipping aggregating CAGE tags. Supply GFF.')
+  }
+  ce
+}

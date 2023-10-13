@@ -1,0 +1,55 @@
+---
+title: "polishing"
+author: "Anna Klarkowska"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library('CAGEr')
+library('ggplot2'); theme_set(theme_minimal())
+library('pheatmap')
+library('patchwork')
+library('devtools')
+library('CAGErAid')
+```
+
+# Load in data from the [loading](./loading.Rmd) file
+
+```{r load in data}
+ce_BARtoBAR <- readRDS('./BARtoBAR.rds')
+ce_BARtoOKI <- readRDS('./BARtoOKI.rds')
+ce_BARtoOSA <- readRDS('./BARtoOSA.rds')
+
+ce_OKItoBAR <- readRDS('./OKItoBAR.rds')
+ce_OKItoOKI <- readRDS('./OKItoOKI.rds')
+ce_OKItoOSA <- readRDS('./OKItoOSA.rds')
+
+ce_OSAtoBAR <- readRDS('./OSAtoBAR.rds')
+ce_OSAtoOKI <- readRDS('./OSAtoOKI.rds')
+ce_OSAtoOSA <- readRDS('./OSAtoOSA.rds')
+```
+
+# Adding sample names and other metadata
+
+```{r polish samples and fix sample names}
+for (i in c(ce_BARtoBAR, ce_BARtoOKI, ce_BARtoOSA)) {
+  i <- quickPolish(i, 'bar')
+}
+for (i in c(ce_OKItoBAR, ce_OKItoOKI, ce_OKItoOSA)) {
+  i <- quickPolish(i, 'oki')
+}
+for (i in c(ce_OSAtoBAR, ce_OSAtoOKI, ce_OSAtoOSA)) {
+  i <- quickPolish(i, 'osa')
+}
+```
+
+# Adding Hisat2 and general QC stats to metadata
+
+```{r hisat2 and general stats QC}
+
+```

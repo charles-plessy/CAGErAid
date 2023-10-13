@@ -1,0 +1,38 @@
+"0","ce_sl <- ce[, ce$SLfound] |>"
+"0","  # resetCAGEexp() |> # should this be commented out or not?"
+"0","  normalizeTagCount(method = ""simpleTpm"") |>"
+"0","  annotateCTSS(gff)"
+"2","
+Normalizing tag count...
+"
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"0","ce_no <- ce[, !ce$SLfound] |> "
+"0","  # resetCAGEexp()"
+"0","  normalizeTagCount(method = 'simpleTpm') |> "
+"0","  annotateCTSS(gff)"
+"2","
+Normalizing tag count...
+"
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."
+"2","Warning: The dim() method for DataFrameList objects is deprecated. Please use dims()
+  on these objects instead."
+"2","Warning: The nrow() method for DataFrameList objects is deprecated. Please use nrows()
+  on these objects instead."
+"2","Warning: The ncol() method for DataFrameList objects is deprecated. Please use ncols()
+  on these objects instead."

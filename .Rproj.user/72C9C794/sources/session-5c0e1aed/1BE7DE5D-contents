@@ -1,0 +1,514 @@
+BSgenomeToUse <- 'BSgenome.Oidioi.OIST.Bar2.p4'
+if(isFALSE(requireNamespace(BSgenomeToUse, quietly = TRUE))){
+  install.packages(BSgenomeToUse,
+                   repos='https://oist.github.io/plessy_oikgenomes_drat/')}
+pathToBamFiles <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2'
+
+
+genpath <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/'
+
+library('CAGEr')
+library('ggplot2'); theme_set(theme_minimal())
+library('viridis')
+library('pheatmap')
+library('BSgenome')
+library('patchwork')
+library('devtools')
+
+pathsToInputFiles <- list.files(pathToBamFiles,
+                                pattern = '*.sorted.bam$',
+                                full.names = TRUE)
+sampleLabels <- make.names(sub( '.sorted.bam', '', basename(pathsToInputFiles)))
+ce <-
+  CAGEexp(
+    metadata = list(genomeName = BSgenomeToUse),
+    colData  = DataFrame(
+      inputFiles     = pathsToInputFiles[1:4],
+      sampleLabels   = sampleLabels[1:4],
+      inputFilesType = 'bamPairedEnd',
+      row.names      = sampleLabels[1:4]
+      )
+  )
+
+
+ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 3, correctSystematicG=FALSE, removeFirstG=FALSE)
+librarySizes(ce)
+colData(ce)
+ce$SLfound  <- grepl('SL', sampleLabels(ce))
+ce$SLfactor <- ce$SLfound |> factor(labels = c('SL not found', 'SL found'))
+ce$sampleType <- 'Adult'
+ce$sampleType[grepl('Rep', sampleLabels(ce))] <- 'Embry'
+
+# remove X from sample name and remove 'names' attribute
+ce$RNA <- sampleLabels(ce) |> sub(pat = '_SL.*|_no.*', rep = '') |> sub(pat = '^X', rep = '') |> unname()
+ce$Description <-
+  paste0('Oikopleura dioica (Barcelona) CAGE library prepared by DNAFORM in 2022—23 from the RNA sample “',
+         ce$RNA, '”. ',
+         ifelse(ce$SLfound, 'A splice leader sequence was found and removed. ',
+                'No splice leader sequence was found. '),
+         'The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version 3.4.')
+# check
+colData(ce)
+
+# hisat2
+
+hs <- read.table(head = TRUE, '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_hisat2.txt')
+rownames(hs) <- make.names(hs$Sample)
+hs <- hs[sampleLabels(ce),]
+# Apparently, multimapped reads have been removed by the pipeline.
+all(librarySizes(ce) == hs$paired_aligned_one)
+ce$paired_aligned_one   <- hs$paired_aligned_one
+ce$paired_aligned_multi <- hs$paired_aligned_multi
+ce$paired_total         <- hs$paired_total
+colData(ce)
+
+
+
+
+# QC
+
+qc <- read.table(head = TRUE, sep = '\t', '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_general_stats.txt')
+rownames(qc) <- make.names(qc$Sample)
+qc2 <- qc[paste0(sampleLabels(ce), '_2'),]
+# raw fastqc
+ce$realLibrarySizes <- qc2$FastQC..raw._mqc.generalstats.fastqc_raw.total_sequences
+# trimmed fastqc
+ce$extracted    <- qc2$FastQC..trimmed._mqc.generalstats.fastqc_trimmed.total_sequences
+
+# approximation on rRNA counts
+ce$rdna <- ce$extracted - ce$paired_total
+
+
+
+# pipeline QC
+# lots of redundant data regarding multimapping, mapping once etc
+# recalculates proportions relative to library sizes to make it less redundant
+msScope_nfcore_rnaseq <- function(libs) {
+  CAGEr:::.checkLibsDataFrame(libs, c("extracted", "rdna",
+                                      "paired_total", "paired_aligned_multi", "paired_aligned_one",
+                                      "realLibrarySizes"))
+  libs$rDNA           <- libs$rdna
+  libs$Unmapped       <- libs$paired_total - libs$paired_aligned_one - libs$paired_aligned_multi
+  libs$Multimapped    <- libs$paired_aligned_multi
+  libs$UniquelyMapped <- libs$paired_aligned_one
+  libs$Discarded      <- libs$realLibrarySizes - libs$extracted
+  list(libs = libs, columns = c('Discarded','rDNA', 'Unmapped', 'Multimapped', 'UniquelyMapped'), total = libs$realLibrarySizes)
+}
+plotAnnot(ce, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+  ylab('Number of tags processed') + xlab('Sample name') +
+  ggtitle('QC report of CAGE library alignment',
+          sub = 'The splice leader sequence was detected and removed before alignment.')
+
+plotAnnot(ce, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+## ^ this doesn't work with the checkLibsDataFrame function
+
+
+# annotation QC
+gff <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
+gff <- rtracklayer::import('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
+gff$type <- as.character(gff$type)
+gff <- gff[gff$type %in% c('transcript', 'intron', 'exon')]
+gff$gene_name <- gff$gene_id
+
+
+ce <- annotateCTSS(ce, gff)
+# annotated results
+colData(ce)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+# proportions
+colData(ce)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+
+
+plotAnnot(ce, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+  ylab('Fraction of tags aligned') +
+  xlab('Sample name') +
+  ggtitle('Annotation of the aligned tags',
+          subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plot_tags <- function(ce_obj) {
+  plotAnnot(ce, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    scale_fill_viridis(discrete = TRUE) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+}
+
+# correlate expression per chromosome
+# (rough clustering of the samples)
+ce <- summariseChrExpr(ce)
+seqNameTotalsSE(ce) |> assay()
+seqNameTotalsSE(ce) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap()
+
+# reverse cumulative distribution of the CTSSes
+# Distributions of expression values differ strongly between the trans-splicing sites and the transcription start sites.  We will need to normalise them separately.
+ce <- setColors(ce, c("red", "pink", "blue", "lightblue"))
+
+ce <- setColors(ce, viridis_pal(option = "D")(length(sampleLabels(ce))))
+plotReverseCumulatives(ce, fitInRange = c(1e3, 1e5),
+                       values = "raw",
+                       onePlot = TRUE) +
+  theme(plot.title = element_text(size = 10))#, group = "SLfactor")
+
+
+
+# export to bed format
+# ce |> CTSSnormalizedTpmGR("all") |> exportToTrack(ce, oneTrack = FALSE)
+
+
+ce <- normalizeTagCount(ce)
+trks <- exportToTrack(ce, oneTrack = FALSE)
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  rtracklayer::export.bed(trks[n], paste0(name, ".ctss.bed.gz"))
+}
+
+trks <- exportToTrack(ce, oneTrack = FALSE)
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  rtracklayer::export.bed(trks[n], paste0(name, ".ctss.bed.gz"))
+}
+# Export to BigWig if you would like to display in IGV.
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  trkL <- split(trks[[n]], strand(trks[[n]]), drop = TRUE)
+  trkL[['+']]@trackLine@description <- paste(name, " plus")
+  trkL[['-']]@trackLine@description <- paste(name, " plus")
+  rtracklayer::export.bw(trkL[['+']], paste0(name, ".plus.bw"))
+  rtracklayer::export.bw(trkL[['-']], paste0(name, ".minus.bw"))
+}
+
+
+# Clustering
+
+ce_SL <- ce[,   ce$SLfound] |>
+  resetCAGEexp() |>
+  normalizeTagCount(method = "simpleTpm") |>
+  annotateCTSS(gff)
+p1_sl <-
+  plotReverseCumulatives(ce_SL,
+                         fitInRange = NULL,
+                         values = "raw") +
+  #ggtitle("Before normalisation", sub = "Trans-splicing sites") +
+  theme_bw()
+p2_sl <-
+  plotReverseCumulatives(ce_SL,
+                         fitInRange = NULL,
+                         values = "normalized") +
+  #ggtitle("TPM normalised", sub = "Trans-splicing sites") +
+  theme_bw()
+
+# doesn't work, idk why
+(p1_sl | p2_sl)# + plot_layout(guides = 'collect')
+
+
+CTSScoordinatesGRL <- function(object) {
+  grl <-
+    lapply(sampleLabels(object), CTSStagCountGR, object = object) |> GRangesList()
+  names(grl) <- unname(sampleLabels(object))
+  # Also pass the original colData?
+  grl@metadata$colData <- colData(object)
+  grl
+}
+
+# Explore properties of low-expressed CTSS
+score(CTSScoordinatesGR(ce_SL)) <-
+  CAGEr:::rowSums.RleDataFrame(CTSSnormalizedTpmDF(ce_SL)) / length(sampleLabels(ce_SL))
+# Confirmation that the cutoffs are usable on pooled data.
+CTSScoordinatesGR(ce_SL) |> plotReverseCumulatives(val = "norm", fit = NULL, group = "Pooled samples") +
+  geom_vline(xintercept = c(10, 1000)) +
+  ggtitle("Reverse-cumulative plot", subtitle = "Pooled samples (sum of scores)")
+
+# something doesn't quite work here ^
+
+# Label CTSSes by expression classes
+CTSScoordinatesGR(ce_SL)$CTSS_expr_range <-
+  score(CTSScoordinatesGR(ce_SL)) |> decode() |> cut(c(0, 10, 1000, 1e6)) |> Rle()
+
+
+
+# The highly expressed CTSS are rare but make most of the library.
+tapply(CTSScoordinatesGR(ce_SL)$score, CTSScoordinatesGR(ce_SL)$CTSS_expr_range, length)
+round(tapply(CTSScoordinatesGR(ce_SL)$score, CTSScoordinatesGR(ce_SL)$CTSS_expr_range, sum) / 1e6, 2)
+
+plotAnnot_CTSS <- function(x, factor, gff, up = 100, down = 0, ...) {
+  # plot percent of clusters, not percent of sum of expression of clusters
+  x <- resetCAGEexp(x)
+  x <- x[factor,]
+  DF <- lapply(assay(x), \(y) Rle(as.numeric(y > 0))) |> DataFrame()
+  assay(CTSStagCountSE(x)) <- DF
+  x <- annotateCTSS(x, gff, up, down)
+  x$librarySizes <- sapply(assay(x),sum)
+  plotAnnot(x, "counts")
+}
+
+# A lot of the low-expression ones are still near promoters.
+# Pay attention that here "promoters" are 100-bp windows strictly upstram
+p_10_sl      <- plotAnnot_CTSS(ce_SL, (CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(0,10]" )       |> decode(), gff) + ggtitle("(0,10]")
+p_1000_sl    <- plotAnnot_CTSS(ce_SL, (CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(10,1e+03]")    |> decode(), gff) + ggtitle("(10,1e+03]")
+p_1000000_sl <- plotAnnot_CTSS(ce_SL, (CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(1e+03,1e+06]") |> decode(), gff) + ggtitle("(1e+03,1e+06]")
+(p_10_sl / p_1000_sl / p_1000000_sl ) + plot_layout(guides = 'collect')
+
+
+
+safePromoters <- function(gr, up, down) {
+  p <- promoters(gr, up, down) |> suppressWarnings()
+  p[width(p) == width(trim(p))]
+}
+
+AGplot <-
+  function(gr) gr |> safePromoters(2, 0) |> getSeq(x = BSgenome::getBSgenome('Bar2.p4')) |> table() |> prop.table() |> as.data.frame() |> ggplot() + aes(y = Var1, x = Freq) + geom_point() + scale_x_continuous("frequency", labels = scales::label_percent())
+agplot1 <-
+  AGplot(CTSScoordinatesGR(ce_SL)[CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(0,10]"])
+agplot2 <-
+  AGplot(CTSScoordinatesGR(ce_SL)[CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(10,1e+03]"])
+agplot3 <-
+  AGplot(CTSScoordinatesGR(ce_SL)[CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(1e+03,1e+06]"])
+
+(agplot1 / agplot2 / agplot3 ) + plot_layout(guides = 'collect')
+
+
+# paraclu singleton removal
+
+# paraclu function doesnt' exist?
+
+# Explore a subset of the data
+ce_SL |> head(10000) |>#CTSSnormalizedTpmGR(1) |> head(10000) |>
+  clusterCTSS(
+    method = 'paraclu',
+    maxLength = 10L,
+    removeSingletons = TRUE,
+    keepSingletonsAbove = 0
+  ) |> plotReverseCumulatives()
+# Clustering does dot affect much the distribution.
+ce_SL |> #CTSSnormalizedTpmGR(1) |> head(10000) |>
+  paraclu(
+    maxLength = 10L,
+    removeSingletons = TRUE,
+    keepSingletonsAbove = 1
+  ) |> plotReverseCumulatives()
+
+ce_SL |> clusterCTSS(
+  method = 'paraclu',
+  maxLength = 10L,
+  removeSingletons = T,
+  keepSingletonsAbove = 1
+) |> plotReverseCumulatives()
+
+# all return 1? what is this doing
+# bad bc of paraclu
+ce_SL |> head(1000) |> clusterCTSS(maxLength = 500L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+ce_SL |> CTSSnormalizedTpmGR(1)|> head(1000) |> CAGEr:::.paraclu3(maxLength = 10L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+ce_SL |> CTSSnormalizedTpmGR(1)|> head(1000) |> paraclu(maxLength = 20L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+ce_SL |> CTSSnormalizedTpmGR(1)|> head(1000) |> paraclu(maxLength = 50L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+ce_SL |> CTSSnormalizedTpmGR(1)|> head(1000) |> paraclu(maxLength = 200L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+ce_SL |> CTSSnormalizedTpmGR(1)|> head(1000) |> paraclu(maxLength = 500L, removeSingletons = TRUE, keepSingletonsAbove = 1) |> length()
+
+
+# paraclu
+ce_SL <- ce_SL |> clusterCTSS( method = "paraclu"
+                               , nrPassThreshold = 1 # Default.  We do not have replicates for all time points
+                               , threshold = 1   # See above.  Note that it allows low-score CTSS supported in other samples.
+                               , removeSingletons = TRUE
+                               , keepSingletonsAbove = 1
+                               , maxLength = 10L # Keep them sharp
+                               , useMulticore = TRUE # Deigo
+                               , nrCores = 4)    |>    # Yay !
+  cumulativeCTSSdistribution() |>
+  quantilePositions()
+
+
+# QC
+plotInterquantileWidth(ce_SL, clusters = "tagClusters", tpmThreshold = 3, qLow = 0.1, qUp = 0.9) +
+  ggplot2::theme_bw()
+
+# ?? also doesn't work but idk why
+
+# Distribution of the expression values in CTSS and tag clusters are very similar,
+# except that the low-expressed ones were filtered out.
+tcs <- tagClustersGR(ce_SL)
+
+# tcs <- CTSStagCountGR(ce_SL, 'all')
+tcs |> sapply(length)
+
+p3_sl <-
+  plotReverseCumulatives(tcs, val = "norm", fit = NULL) + theme_bw() + ggtitle("Tag clusters", sub = "Trans-splicing sites")
+(p2_sl + scale_y_log10(limits = c(1, 1e5)) + ggtitle("CTSS", sub = "Trans-splicing sites") |
+    p3_sl + scale_y_log10(limits = c(1, 1e5))) + plot_layout(guides = 'collect')
+
+# ?? also doesn't work but idk why, I think something with plotReverseCumulatives
+
+# Alternative representation as histograms
+f <- function(name, tc) {
+  tc[[name]] |> as.data.frame() |>
+    dplyr::mutate(sampleName = name)
+}
+lapply(names(tcs), f, tcs) |> do.call(what = rbind) |> ggplot() +
+  aes(x = score, fill = sampleName) +
+  geom_histogram(bins = 100) +
+  scale_x_log10() + facet_wrap(~sampleName) + theme_bw()
+
+# no score - but score in CTSStagCountGR and CTSScoordinatesGR
+# this is very confusing
+
+# tagClustersGR(ce_SL)$dominant_ctss$expr_range <-
+#   score(tagClustersGR(ce_SL)) |> decode() |> cut(c(0, 10, 1000, 1e6)) |> Rle()
+
+TCs <- tagClustersGR(ce_SL)
+TCs_dom <- endoapply(TCs, function(gr) {
+  gr$dominant_ctss$expr_range <- score(gr) |> decode() |> cut(c(0, 10, 1000, 1e6)) |> Rle()
+  gr$dominant_ctss
+})
+# problem is in the score function, whatever that is
+
+distanceToATGbyScore <- function(TCs_dom, gff, expr_range) {
+  lapply(TCs_dom, function(gr) {
+    hits <- distanceToNearest(gr[gr$expr_range == expr_range],
+                              promoters(gff[gff$type == "transcript"], 0, 1))
+    mcols(hits)$distance
+  }) |> sapply(summary)
+}
+distanceToATGbyScore(TCs, gff, "(0,10]")
+distanceToATGbyScore(TCs_dom, gff, "(10,1e+03]")
+distanceToATGbyScore(TCs_dom, gff, "(1e+03,1e+06]")
+
+# the above doesn't work bc of TCs_dom not being able to be made
+
+
+# aggregate CAGE tags
+
+# First I ran with a threshold of 1, but it captured a lot of ectopic trans-splicing
+# at splice junctions, which we do not want to use for updating annotation and
+# defining operons.
+ce_SL <- ce_SL |>
+  # the next 2 lines below are added bc idek anymore
+  # seems to work at the very least
+  # clusterCTSS not with paraclu bc it's copied from Okinawa Rmd, should be with paraclu
+  normalizeTagCount(method = 'simpleTpm') |>
+  clusterCTSS() |>
+  aggregateTagClusters(maxDist = 10L, tpmThreshold = 10, excludeSignalBelowThreshold = FALSE) |>  # See also the score distribution
+  cumulativeCTSSdistribution(clusters = "consensusClusters") |>
+  quantilePositions(clusters = "consensusClusters") |>
+  annotateConsensusClusters(gff, up = 100, down = 0)
+
+
+
+
+
+# ce <- normalizeTagCount(ce, method = "simpleTpm")
+# ce <- clusterCTSS(ce)
+# ce <- cumulativeCTSSdistribution(ce)
+# ce <- quantilePositions(ce)
+# plotInterquantileWidth(ce, clusters = "tagClusters", tpmThreshold = 3, qLow = 0.1, qUp = 0.9)
+# ce <- aggregateTagClusters(ce)
+# ce <- annotateConsensusClusters(ce, gff)
+# consensusClustersGR(ce)
+# ce$outOfClusters / ce$librarySizes
+
+
+x <- consensusClustersGR(ce_SL)
+(100 - ce_SL$outOfClusters / ce_SL$librarySizes) |> round(3)
+plotReverseCumulatives(x)
+# No score is lower than our 10 TPM threshold
+hist(log10(decode(score(x))), br = 100)
+x$maxTPM <- ce_SL |> consensusClustersSE() |> assay("normalized") |> rowMax() |> unname() |> Rle()
+hist(log10(decode(x$maxTPM)), br = 100)
+consensusClustersGRL <- function(object) {
+  ccGRreallyGR <- function(object, label) {
+    gr <- GRanges(consensusClustersGR(object, label))
+    score(gr) <- Rle(score(gr))
+    gr
+  }
+  grl <- lapply(sampleLabels(object), ccGRreallyGR, object = object) |> GRangesList()
+  names(grl) <- unname(sampleLabels(object))
+  # Also pass the original colData?
+  grl@metadata$colData <- colData(object)
+  grl
+}
+clustersGRL <- consensusClustersGRL(ce_SL) |>
+  endoapply(\(gr) {
+    #gr$expr_range <- score(gr) |> decode() |> cut(c(0, 10, 1000, 1e6), include.lowest = TRUE)
+    gr$expr_range <- score(gr) |> decode() |> cut(c(0, 10, 1000, 1e6), include.lowest = FALSE)
+    gr$expr_range <- gr$expr_range |> factor(levels = append("[0]", levels(gr$expr_range)))
+    gr$expr_range[is.na(gr$expr_range)] <- "[0]"
+    gr
+  })
+clustersGRL |> sapply(\(gr) table(gr$expr_range))
+
+filterGRL <- function(grl, x) {
+  endoapply(grl, \(gr) {
+    gr[gr$expr_range == x]
+  })
+}
+myPlotAnnot <- function(grl, range) {
+  grl |> filterGRL(range) |> plotAnnot("counts", range)
+}
+
+# plots don't work bc of CompressedGrangesList not working with plotAnnot or plotReverseCumulatives
+p1_cc <- myPlotAnnot(clustersGRL, "[0,10]")
+p2_cc <- myPlotAnnot(clustersGRL, "(10,1e+03]")
+p3_cc <- myPlotAnnot(clustersGRL, "(1e+03,1e+06]")
+
+(p1_cc / p2_cc / p3_cc) + plot_layout(guides = 'collect')
+
+
+plotReverseCumulatives(clustersGRL)
+plotAnnot(clustersGRL, "counts", "Consensus clusters")
+x$expr_range <- x$maxTPM |> decode() |> cut(c(0, 10, 1000, 1e6))
+table(x$expr_range)
+plotAnnot(clustersGRL, "counts", "Consensus clusters", facet="expr_range")
+
+
+# A lot of the low-expression ones are still near promoters.
+# Pay attention that here "promoters" are 200-bp windows.
+p_10 <- plotAnnot_CTSS(x[x$expr_range == "(0,10]", ] , gff) + ggtitle("(0,10]")
+p_1000 <- plotAnnot_CTSS(ce_SL[CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(10,1e+03]", ], gff) + ggtitle("(10,1e+03]")
+p_1000000 <- plotAnnot_CTSS(ce_SL[CTSScoordinatesGR(ce_SL)$CTSS_expr_range == "(1e+03,1e+06]", ], gff) + ggtitle("(1e+03,1e+06]")
+(p_10 / p_1000 / p_1000000 ) + plot_layout(guides = 'collect')
+
+
+consensusClustersGR(ce_SL, 1) |> score() |> decode() |> log10() |> hist(100)
+consensusClustersGR(ce_SL, 2) |> score() |> decode() |> log10() |> hist(100)
+plotInterquantileWidth(ce_SL, clusters = "consensusClusters", tpmThreshold = 3, qLow = 0.1, qUp = 0.9)
+
+rowRanges(consensusClustersSE(ce_SL))$normExprTot <- rowSums(consensusClustersSE(ce_SL)|>assay("normalized"))
+rowRanges(consensusClustersSE(ce_SL))$normExprRange <- cut(rowRanges(consensusClustersSE(ce_SL))$normExprTot, c(0, 10, 1000, 1e6))
+rowRanges(consensusClustersSE(ce_SL))$normExprRange  |> summary()
+
+# Export Consensus clusters
+
+## Trans-splicing sites
+
+# Paint in grey those that do not have `AG` upstream.
+
+cctrack_SL <- exportToTrack(ce_SL, "consensusClusters", qLow = 0.1, qUp = 0.9)
+cctrack_SL@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
+cctrack_SL@trackLine@name <- "SL"
+# Flat AG
+cctrack_SL$itemRgb <- ifelse(flagByUpstreamSequences(rowRanges(consensusClustersSE(ce_SL))$dominant_ctss, "AG"), "black", "grey")
+
+cctrack_SL[cctrack_SL$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
+cctrack_SL[cctrack_SL$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
+
+rtracklayer::export.bed(cctrack_SL, "clusters_SL.bed")
+
+cctrack_no <- exportToTrack(ce_no, "consensusClusters", qLow = 0.1, qUp = 0.9)
+cctrack_no@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
+cctrack_no@trackLine@name <- "TSS"
+# Flat the clusters of width 1.
+cctrack_no$itemRgb <- ifelse(width(cctrack_no) > 1, "black", "grey")
+
+rtracklayer::export.bed(cctrack_no, "clusters_no.bed")
+
+# cannot do any of that because of invalid names? maybe the ranges are not exporting correctly
+
+

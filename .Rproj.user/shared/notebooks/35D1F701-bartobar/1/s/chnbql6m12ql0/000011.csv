@@ -1,0 +1,7 @@
+"0","plotAnnot(ce, CAGErAid::msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +"
+"0","    ylab('Number of tags processed') +"
+"0","    xlab('Sample name') +"
+"0","    scale_y_continuous(guide = guide_axis(angle = 45)) +"
+"0","    theme(plot.subtitle=element_text(size=8, face=""italic"")) +"
+"0","    ggtitle('QC report of CAGE library alignment',"
+"0","            sub = 'The splice leader sequence was detected and removed before alignment')"

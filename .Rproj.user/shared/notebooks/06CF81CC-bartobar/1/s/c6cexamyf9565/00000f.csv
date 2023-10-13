@@ -1,0 +1,38 @@
+"0",""
+"0","pathsToInputFiles <- list.files(pathToBamFiles,"
+"0","                                pattern = ""*.sorted.bam$"","
+"0","                                full.names = TRUE)"
+"0","sampleLabels <- make.names(sub( "".sorted.bam"", """", basename(pathsToInputFiles)))"
+"0","ce <-"
+"0","  CAGEexp( metadata = list(genomeName = BSgenomeToUse)"
+"0","         , colData  = DataFrame( inputFiles     = pathsToInputFiles[1:4]"
+"0","                               , sampleLabels   = sampleLabels[1:4]"
+"0","                               , inputFilesType = ""bamPairedEnd"""
+"0","                               , row.names      = sampleLabels[1:4]))"
+"0",""
+"0","# ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 4, correctSystematicG=FALSE, removeFirstG=FALSE)"
+"0","ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)"
+"2","
+Reading in file: /bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2/14FE_no.sorted.bam...
+"
+"2","	-> Filtering out low quality reads...
+"
+"2","
+Reading in file: /bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2/14FE_SL.sorted.bam...
+"
+"2","	-> Filtering out low quality reads...
+"
+"2","
+Reading in file: /bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2/29FE_no.sorted.bam...
+"
+"2","	-> Filtering out low quality reads...
+"
+"2","
+Reading in file: /bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2/29FE_SL.sorted.bam...
+"
+"2","	-> Filtering out low quality reads...
+"
+"0","saveRDS(ce, '~/data/ce_clean.rds')"
+"2","Warning: cannot open compressed file '/home/a/a-klarkowska/data/ce_clean.rds', probable reason 'No such file or directory'"
+"2","Error in gzfile(file, mode) : cannot open the connection
+"

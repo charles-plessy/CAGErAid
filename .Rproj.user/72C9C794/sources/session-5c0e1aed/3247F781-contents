@@ -1,0 +1,266 @@
+---
+title: "Barcelona to Barcelona"
+author: "Anna Klarkowska"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+BSgenomeToUse <- "BSgenome.Oidioi.OIST.Bar2.p4"
+if(isFALSE(requireNamespace(BSgenomeToUse, quietly = TRUE)))
+  install.packages(BSgenomeToUse,
+                   repos="https://oist.github.io/plessy_oikgenomes_drat/")
+pathToBamFiles <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2'
+```
+
+```{r libraries}
+library('CAGEr')
+library('ggplot2'); theme_set(theme_minimal())
+library('pheatmap')
+library('BSgenome')
+library('patchwork')
+library('devtools')
+# install_github('a-klarkowska/CAGErAid')
+library('CAGErAid')
+```
+
+# Load the CAGE data from BAM files.
+
+BAM files produced by HiSat2 are loaded in paired-end mode. Sample names are
+parsed from the file names.
+
+```{r load BAM files}
+
+pathsToInputFiles <- list.files(pathToBamFiles,
+                                pattern = "*.sorted.bam$",
+                                full.names = TRUE)
+sampleLabels <- make.names(sub( ".sorted.bam", "", basename(pathsToInputFiles)))
+ce <-
+  CAGEexp( metadata = list(genomeName = BSgenomeToUse)
+         , colData  = DataFrame( inputFiles     = pathsToInputFiles[1:4]
+                               , sampleLabels   = sampleLabels[1:4]
+                               , inputFilesType = "bamPairedEnd"
+                               , row.names      = sampleLabels[1:4]))
+
+# ce <- getCTSS(ce, useMulticore = TRUE, nrCores = 4, correctSystematicG=FALSE, removeFirstG=FALSE)
+ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+# saveRDS(ce, '~/CAGErAid/data/ce_clean.rds')
+
+colData(ce)
+```
+
+Polish the sample data and fix sample names
+```{r polish samples and fix sample names}
+ce$SLfound  <- grepl('SL', sampleLabels(ce))
+ce$SLfactor <- ce$SLfound |> 
+  factor(labels = c('SL not found', 'SL found'))
+ce$sampleType <- 'Adult'
+ce$sampleType[grepl('Rep', sampleLabels(ce))] <- 'Embry'
+# remove X from sample name and remove 'names' attribute
+ce$RNA <- sampleLabels(ce) |> 
+  sub(pat = '_SL.*|_no.*', rep = '') |> 
+  sub(pat = '^X', rep = '') |> 
+  unname()
+ce$Description <-
+  paste0('Oikopleura dioica (Barcelona) CAGE library prepared by DNAFORM in 2022—23 from the RNA sample “',
+         ce$RNA, '”. ',
+         ifelse(ce$SLfound, 'A splice leader sequence was found and removed. ',
+                'no splice leader sequence was found. '),
+         'The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version 3.12.')
+# check
+colData(ce)
+```
+
+Import Hisat2 and general QC statistics
+```{r hisat and general QC stats}
+hs <- read.table(head = TRUE, '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_hisat2.txt')
+qc <- read.table(head = TRUE, sep = '\t', '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/multiqc/hisat2/multiqc_data/multiqc_general_stats.txt')
+
+ce <- quickMQC(ce, hs, qc)
+colData(ce)
+```
+
+```{r plot QC report of CAGE library alignment}
+plotAnnot(ce, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+```
+
+Import GFF and annotate CAGEexp
+```{r annotation}
+# import gff
+gff <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
+
+ce <- annotateCTSS(ce, gff)
+# annotated results
+colData(ce)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+# proportions
+colData(ce)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+
+plotAnnot(ce, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+```
+
+```{r correlate expression per chromosome}
+ce <- summariseChrExpr(ce)
+seqNameTotalsSE(ce) |> assay()
+# rough clustering
+seqNameTotalsSE(ce) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap()
+```
+
+```{r reverse cumulative distribution of the CTSSes}
+# Distributions of expression values differ strongly between the trans-splicing sites and the transcription start sites.  We will need to normalise them separately.
+ce <- setColors(
+  ce,
+  c('red', 'pink', 'blue', 'lightblue')
+  # c(
+    # "red",
+    # "red",
+    # "red",
+    # "red",
+    # "blue",
+    # "blue",
+    # "pink",
+    # "pink",
+    # "pink",
+    # "pink",
+    # "green",
+    # "green",
+    # "green",
+    # "green",
+    # "green",
+    # "green",
+    # "green",
+    # "green"
+  # )
+)
+
+plotReverseCumulatives(ce, fitInRange = c(1e3, 1e5),
+                       values = "raw",
+                       onePlot = F) + #,
+                       # group = 'SLfactor') +
+  theme(plot.title = element_text(size = 10))
+```
+
+```{r export unclustered data to bed and/or bw}
+# bed
+ce <- normalizeTagCount(ce)
+# exportToTrack was working before, I'm not sure what goes wrong
+trks <- exportToTrack(ce, oneTrack = FALSE)
+# Error in `[[<-`(`*tmp*`, name, value = logical(0)) : 
+#   0 elements in value to replace 465992 elements
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  rtracklayer::export.bed(trks[n], paste0(name, ".ctss.bed.gz"))
+}
+# bigWig
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  trkL <- split(trks[[n]], strand(trks[[n]]), drop = TRUE)
+  trkL[['+']]@trackLine@description <- paste(name, " plus")
+  trkL[['-']]@trackLine@description <- paste(name, " plus")
+  rtracklayer::export.bw(trkL[['+']], paste0(name, ".plus.bw"))
+  rtracklayer::export.bw(trkL[['-']], paste0(name, ".minus.bw"))
+}
+```
+
+```{r optional - save the rds for later}
+saveRDS(ce, 'ce.rds')
+```
+
+# Clustering
+
+Separate into SL containing and no SL samples
+```{r}
+ce_sl <- ce[, ce$SLfound] |>
+  # resetCAGEexp() |> # should this be commented out or not?
+  normalizeTagCount(method = "simpleTpm") |>
+  annotateCTSS(gff)
+ce_no <- ce[, !ce$SLfound] |> 
+  # resetCAGEexp()
+  normalizeTagCount(method = 'simpleTpm') |> 
+  annotateCTSS(gff)
+```
+
+```{r plot reverse cumulatives}
+p1_sl <-
+  plotReverseCumulatives(ce_sl,
+                         fitInRange = NULL,
+                         values = "raw") +
+  #ggtitle("Before normalisation", sub = "Trans-splicing sites") +
+  theme_bw()
+p2_sl <-
+  plotReverseCumulatives(ce_sl,
+                         fitInRange = NULL,
+                         values = "normalized") +
+  #ggtitle("TPM normalised", sub = "Trans-splicing sites") +
+  theme_bw()
+
+p1_no <- 
+  plotReverseCumulatives(ce_no,
+                         fitInRange = NULL,
+                         values = "raw") +
+  #ggtitle("Before normalisation", sub = "Trans-splicing sites") +
+  theme_bw()
+p2_no <-
+  plotReverseCumulatives(ce_no,
+                         fitInRange = NULL,
+                         values = "normalized") +
+  #ggtitle("TPM normalised", sub = "Trans-splicing sites") +
+  theme_bw()
+
+# doesn't work, not sure why
+# (p1_sl | p2_sl) + plot_layout(guides = 'collect')
+# (p1_no | p2_no) + plot_layout(guides = 'collect')
+
+
+```
+
+```{r simple clustering and aggregating}
+ce_sl <- quickClustersSL(ce_sl, aggregate = T, gff)
+ce_no <- quickClustersNO(ce_no, aggregate = T, gff)
+```
+
+```{r export to bed}
+
+# with SL
+cctrack_sl <- exportToTrack(ce_sl, "consensusClusters", qLow = 0.1, qUp = 0.9)
+# Error in h(simpleError(msg, call)) : 
+# error in evaluating the argument 'x' in selecting a method for function 'decode': subscript contains invalid names
+
+
+cctrack_sl@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
+cctrack_sl@trackLine@name <- "sl"
+# Flat AG
+cctrack_sl$itemRgb <- ifelse(flagByUpstreamSequences(rowRanges(consensusClustersSE(ce_sl))$dominant_ctss, "AG"), "black", "grey")
+
+cctrack_sl[cctrack_sl$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
+cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
+
+# cctrack_sl <- makeBed(ce_sl, TRUE)
+rtracklayer::export.bed(cctrack_sl, "clusters_sl.bed")
+
+
+# without SL
+cctrack_no <- exportToTrack(ce_no, "consensusClusters", qLow = 0.1, qUp = 0.9)
+cctrack_no@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
+cctrack_no@trackLine@name <- "TSS"
+# Flat the clusters of width 1.
+cctrack_no$itemRgb <- ifelse(width(cctrack_no) > 1, "black", "grey")
+
+
+# cctrack_no <- makeBed(ce_no, FALSE)
+rtracklayer::export.bed(cctrack_no, "clusters_no.bed")
+
+```
+

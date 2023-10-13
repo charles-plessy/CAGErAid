@@ -1,0 +1,5 @@
+"0","trks <- exportToTrack(ce, oneTrack = FALSE)
+"
+"2","Error in `[[<-`(`*tmp*`, name, value = logical(0)) : 
+  0 elements in value to replace 465992 elements
+"

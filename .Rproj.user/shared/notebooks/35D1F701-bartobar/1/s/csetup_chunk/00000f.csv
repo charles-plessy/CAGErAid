@@ -1,0 +1,6 @@
+"0","knitr::opts_chunk$set(echo = TRUE)"
+"0","BSgenomeToUse <- ""BSgenome.Oidioi.OIST.Bar2.p4"""
+"0","if(isFALSE(requireNamespace(BSgenomeToUse, quietly = TRUE)))"
+"0","  install.packages(BSgenomeToUse,"
+"0","                   repos=""https://oist.github.io/plessy_oikgenomes_drat/"")"
+"0","pathToBamFiles <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/hisat2'"

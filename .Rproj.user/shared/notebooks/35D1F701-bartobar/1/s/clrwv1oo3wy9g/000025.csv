@@ -1,0 +1,9 @@
+"0","plotReverseCumulatives(ce_no,
+                         fitInRange = NULL,
+                         values = ""normalized"") +
+  ggtitle(""TPM normalised"", sub = ""Trans-splicing sites"") +
+  theme_bw()
+"
+"2","Error in plotReverseCumulatives(ce_no, fitInRange = NULL, values = ""normalized"") +  : 
+  non-numeric argument to binary operator
+"

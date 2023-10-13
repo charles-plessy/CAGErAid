@@ -1,0 +1,7 @@
+{
+    "installOptions": {
+        "installFromRepository": true,
+        "libraryPath": "/home/a/a-klarkowska/R/library/R_4.3.0_for_RStudio_Singularity",
+        "installDependencies": true
+    }
+}
