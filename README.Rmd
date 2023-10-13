@@ -1,0 +1,64 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# CAGErAid
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of CAGErAid is to assist in using [CAGEr](https://rdrr.io/bioc/CAGEr/) for analysis of CAGE data for cross-alignments between Barcelona, Osaka and Okinawa samples of Oikopleura dioica, with and without splice leader sequences.
+
+## Installation
+
+You can install the development version of CAGErAid from [GitHub](https://github.com/) with:
+
+```{r}
+# install.packages("devtools")
+devtools::install_github('a-klarkowska/CAGErAid') |> suppressMessages()
+```
+
+## Polishing data
+
+After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading.Rmd). To add metadata, use `quickPolish()` and `quickMQC()`.
+
+```{r example}
+
+library(CAGErAid) |> suppressPackageStartupMessages()
+
+# load CAGEexp object - Barcelona reads aligned to Barcelona genome
+ce <- readRDS('data/ce_clean.rds')
+SummarizedExperiment::colData(ce)
+
+```
+
+The CAGEexp file could use some polishing on the sample names and a little more information on the samples themselves. To do that, we can use `quickPolish()`. To add metadata from the nf-core RNAseq pipeline QC, we call `quickMQC()`.
+
+```{r polishing}
+
+ce <- ce |> 
+  quickPolish(reads = 'bar') |> 
+  quickMQC(guess_path = TRUE, check_multimap = TRUE)
+SummarizedExperiment::colData(ce)
+
+```
+
+To easily annotate data, we can use `quickGFF()`.
+
+```{r annotation}
+
+gff <- quickGFF('data/Barcelona.gtf', types = c('transcript', 'exon'))
+ce <- CAGEr::annotateCTSS(ce, gff)
+
+```
