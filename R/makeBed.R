@@ -36,7 +36,7 @@ makeBed <- function(ce, sl_found){
 
     cctrack_sl
   }
-  if (sl_found == FALSE) {
+  else {
     cctrack_no <- CAGEr::exportToTrack(ce, "consensusClusters", qLow = 0.1, qUp = 0.9)
     cctrack_no@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
     cctrack_no@trackLine@name <- "TSS"

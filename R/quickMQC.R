@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' quickMQC(ce, hisat, qc, check_multimap = TRUE, guess_path = FALSE)
+#' quickMQC(ce, guess_path = FALSE, hisat, qc, check_multimap = TRUE)
 #' }
 #'
 #' @export
@@ -25,19 +25,15 @@ quickMQC <- function(ce, guess_path = TRUE, hisat = NULL, qc = NULL, check_multi
   if (guess_path == TRUE) {
     data <- ce$inputFiles |> dirname() |> unique()
     if (length(data) != 1)
-    {
       stop('No unique path for all files found! Provide paths to files.')
-    }
-    else {
-      hisat <-
-        data |>
-        sub(pattern = "hisat2", replacement = "multiqc/hisat2/multiqc_data/multiqc_hisat2.txt") |>
-        utils::read.table(header = TRUE)
-      qc <-
-        data |>
-        sub(pattern = "hisat2", replacement = "multiqc/hisat2/multiqc_data/multiqc_general_stats.txt") |>
-        utils::read.table(header = TRUE, sep = '\t')
-    }
+    hisat <-
+      data |>
+      sub(pattern = "hisat2", replacement = "multiqc/hisat2/multiqc_data/multiqc_hisat2.txt") |>
+      utils::read.table(header = TRUE)
+    qc <-
+      data |>
+      sub(pattern = "hisat2", replacement = "multiqc/hisat2/multiqc_data/multiqc_general_stats.txt") |>
+      utils::read.table(header = TRUE, sep = '\t')
   }
   else {if (is.null(hisat) == TRUE | is.null(qc) == TRUE) stop('Provide paths to files!')}
 

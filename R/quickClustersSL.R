@@ -1,11 +1,11 @@
 #' Clusters CTSSs for samples with splice leader
 #' @description Quickly clusters CTSSs in splice leader-containing sample data with established parameters.
-#' For clustering CTSSs in samples without splice leader found, use [CAGErAid::quickClustersNO()].
+#' For clustering CTSSs in samples without splice leader found, use [quickClustersNO()].
 #'
 #' The method for clustering CTSSs is paraclu, and by default the algorithm uses 4 cores.
 #'
 #' Optional aggregating tags is possible with aggregate = TRUE, at which the user needs to provide a GFF file.
-#' For easy processing of gff files use [CAGErAid::quickGFF()].
+#' For easy processing of gff files use [quickGFF()].
 #'
 #' @param ce CAGEexp object
 #' @param aggregate whether to return consensus clusters
