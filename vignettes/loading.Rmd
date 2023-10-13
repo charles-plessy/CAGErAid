@@ -1,0 +1,107 @@
+---
+title: "loading"
+author: "Anna Klarkowska"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+BSgenomeToUse_BAR <- "BSgenome.Oidioi.OIST.Bar2.p4"
+BSgenomeToUse_OKI <- "BSgenome.Odioica.local.OKI2018.I69"
+BSgenomeToUse_OSA <- "BSgenome.Odioica.local.OSKA2016"
+genome_list <- c(BSgenomeToUse_BAR, BSgenomeToUse_OKI, BSgenomeToUse_OSA)
+if(isFALSE(
+  requireNamespace(
+    BSgenomeToUse_BAR,
+    BSgenomeToUse_OKI,
+    BSgenomeToUse_OSA,
+    quietly = TRUE
+  )
+))
+  install.packages(BSgenomeToUse_BAR,
+                   BSgenomeToUse_OKI,
+                   BSgenomeToUse_OSA,
+                   repos = "https://oist.github.io/plessy_oikgenomes_drat/"
+  )
+
+pathToBamFiles_BAR <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik'
+pathToBamFiles_OKI <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2021-12-17_Okinawa_Oik'
+pathToBamFiles_OSA <- '/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-02-09_Osaka_Oik'
+
+suffix_list <- c('/AlignWithRNAseqPipelinePE_BAR/hisat2',
+                 '/AlignWithRNAseqPipelinePE_OKI/hisat2',
+                 '/AlignWithRNAseqPipelinePE_OSA/hisat2')
+
+align_list <- c('BAR', 'OKI', 'OSA')
+```
+
+```{r libraries}
+library('CAGEr')
+library('BSgenome')
+library('devtools')
+```
+
+# Load the CAGE data from BAM files.
+
+
+BAM files produced by HiSat2 are loaded in paired-end mode. Sample names are
+parsed from the file names.
+
+# BAR reads to *genome*
+
+```{r load BAM files - Barcelona reads}
+for (i in 1:3) {
+  pathsToInputFiles <- list.files(paste0(pathToBamFiles_BAR, suffix_list[i]),
+                                pattern = "*.sorted.bam$",
+                                full.names = TRUE)
+  sampleLabels <- make.names(sub( ".sorted.bam", "", basename(pathsToInputFiles)))
+  ce <-
+    CAGEexp(metadata = list(genomeName = genome_list[i])
+         , colData  = DataFrame( inputFiles     = pathsToInputFiles
+                               , sampleLabels   = sampleLabels
+                               , inputFilesType = "bamPairedEnd"
+                               , row.names      = sampleLabels))
+  ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  saveRDS(ce, file = paste0('./BARto', align_list[i], '.rds'))
+}
+```
+
+# OKI reads to *genome*
+
+```{r load BAM files - Okinawa reads}
+for (i in 1:3) {
+  pathsToInputFiles <- list.files(paste0(pathToBamFiles_OKI, suffix_list[i]),
+                                pattern = "*.sorted.bam$",
+                                full.names = TRUE)
+  sampleLabels <- make.names(sub( ".sorted.bam", "", basename(pathsToInputFiles)))
+  ce <-
+    CAGEexp(metadata = list(genomeName = genome_list[i])
+         , colData  = DataFrame( inputFiles     = pathsToInputFiles
+                               , sampleLabels   = sampleLabels
+                               , inputFilesType = "bamPairedEnd"
+                               , row.names      = sampleLabels))
+  ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  saveRDS(ce, file = paste0('./OKIto', align_list[i], '.rds'))
+}
+```
+
+
+# OSA reads to *genome*
+
+```{r load BAM files - Osaka reads}
+for (i in 1:3) {
+  pathsToInputFiles <- list.files(paste0(pathToBamFiles_OSA, suffix_list[i]),
+                                pattern = "*.sorted.bam$",
+                                full.names = TRUE)
+  sampleLabels <- make.names(sub( ".sorted.bam", "", basename(pathsToInputFiles)))
+  ce <-
+    CAGEexp(metadata = list(genomeName = genome_list[i])
+         , colData  = DataFrame( inputFiles     = pathsToInputFiles
+                               , sampleLabels   = sampleLabels
+                               , inputFilesType = "bamPairedEnd"
+                               , row.names      = sampleLabels))
+  ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  saveRDS(ce, file = paste0('./OSAto', align_list[i], '.rds'))
+}
+```
