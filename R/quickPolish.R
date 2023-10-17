@@ -52,6 +52,8 @@ quickPolish <- function(ce, reads = c('bar', 'oki', 'osa')) {
   }
   if (reads == 'osa') {
     ce$SLfound <- grepl("SL", CAGEr::sampleLabels(ce))
+    ce$SLfactor <- ce$SLfound |>
+      factor(labels = c('SL not found', 'SL found'))
     ce$sampleType[grepl("EB", CAGEr::sampleLabels(ce))] <- "EB"
     ce$sampleType[grepl("DE", CAGEr::sampleLabels(ce))] <- "DE"
     ce$RNA <-

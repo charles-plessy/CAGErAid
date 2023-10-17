@@ -21,35 +21,369 @@ library('CAGErAid')
 # Load in data from the [loading](./loading.Rmd) file
 
 ```{r load in data}
-ce_BARtoBAR <- readRDS('./BARtoBAR.rds')
-ce_BARtoOKI <- readRDS('./BARtoOKI.rds')
-ce_BARtoOSA <- readRDS('./BARtoOSA.rds')
+ce_BARtoBAR <- readRDS('./data/BARtoBAR.rds')
+ce_BARtoOKI <- readRDS('./data/BARtoOKI.rds')
+ce_BARtoOSA <- readRDS('./data/BARtoOSA.rds')
 
-ce_OKItoBAR <- readRDS('./OKItoBAR.rds')
-ce_OKItoOKI <- readRDS('./OKItoOKI.rds')
-ce_OKItoOSA <- readRDS('./OKItoOSA.rds')
+ce_OKItoBAR <- readRDS('./data/OKItoBAR.rds')
+ce_OKItoOKI <- readRDS('./data/OKItoOKI.rds')
+ce_OKItoOSA <- readRDS('./data/OKItoOSA.rds')
 
-ce_OSAtoBAR <- readRDS('./OSAtoBAR.rds')
-ce_OSAtoOKI <- readRDS('./OSAtoOKI.rds')
-ce_OSAtoOSA <- readRDS('./OSAtoOSA.rds')
+ce_OSAtoBAR <- readRDS('./data/OSAtoBAR.rds')
+ce_OSAtoOKI <- readRDS('./data/OSAtoOKI.rds')
+ce_OSAtoOSA <- readRDS('./data/OSAtoOSA.rds')
 ```
 
 # Adding sample names and other metadata
 
 ```{r polish samples and fix sample names}
-for (i in c(ce_BARtoBAR, ce_BARtoOKI, ce_BARtoOSA)) {
-  i <- quickPolish(i, 'bar')
-}
-for (i in c(ce_OKItoBAR, ce_OKItoOKI, ce_OKItoOSA)) {
-  i <- quickPolish(i, 'oki')
-}
-for (i in c(ce_OSAtoBAR, ce_OSAtoOKI, ce_OSAtoOSA)) {
-  i <- quickPolish(i, 'osa')
-}
+
+ce_BARtoBAR <- quickPolish(ce_BARtoBAR, 'bar')
+ce_BARtoOKI <- quickPolish(ce_BARtoOKI, 'bar')
+ce_BARtoOSA <- quickPolish(ce_BARtoOSA, 'bar')
+
+ce_OKItoBAR <- quickPolish(ce_OKItoBAR, 'oki')
+ce_OKItoOKI <- quickPolish(ce_OKItoOKI, 'oki')
+ce_OKItoOSA <- quickPolish(ce_OKItoOSA, 'oki')
+
+ce_OSAtoBAR <- quickPolish(ce_OSAtoBAR, 'osa')
+ce_OSAtoOKI <- quickPolish(ce_OSAtoOKI, 'osa')
+ce_OSAtoOSA <- quickPolish(ce_OSAtoOSA, 'osa')
+
 ```
 
 # Adding Hisat2 and general QC stats to metadata
 
 ```{r hisat2 and general stats QC}
+
+ce_BARtoBAR <- quickMQC(ce_BARtoBAR, guess_path = TRUE, check_multimap = TRUE)
+ce_BARtoOKI <- quickMQC(ce_BARtoOKI, guess_path = TRUE, check_multimap = TRUE)
+ce_BARtoOSA <- quickMQC(ce_BARtoOSA, guess_path = TRUE, check_multimap = TRUE)
+
+ce_OKItoBAR <- quickMQC(ce_OKItoBAR, guess_path = TRUE, check_multimap = TRUE)
+ce_OKItoOKI <- quickMQC(ce_OKItoOKI, guess_path = TRUE, check_multimap = TRUE)
+ce_OKItoOSA <- quickMQC(ce_OKItoOSA, guess_path = TRUE, check_multimap = TRUE)
+
+ce_OSAtoBAR <- quickMQC(ce_OSAtoBAR, guess_path = TRUE, check_multimap = TRUE)
+ce_OSAtoOKI <- quickMQC(ce_OSAtoOKI, guess_path = TRUE, check_multimap = TRUE)
+ce_OSAtoOSA <- quickMQC(ce_OSAtoOSA, guess_path = TRUE, check_multimap = TRUE)
+
+```
+
+```{r ploting mapping stats}
+
+plotAnnot(ce_BARtoBAR, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoBAR: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_BARtoOKI, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoOKI: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_BARtoOSA, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoOSA: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OKItoBAR, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoBAR: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OKItoOKI, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoOKI: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OKItoOSA, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoOSA: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OSAtoBAR, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoBAR: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OSAtoOKI, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoOKI: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+
+plotAnnot(ce_OSAtoOSA, msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+    ylab('Number of tags processed') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoOSA: QC report of CAGE library alignment',
+            sub = 'The splice leader sequence was detected and removed before alignment')
+```
+
+```{r annotating the CTSSs}
+
+# load GFF files
+gff_bar <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
+gff_oki <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2021-12-17_Okinawa_Oik/AlignWithRNAseqPipelinePE_OKI/Okinawa.genes.gtf')
+gff_osa <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-02-09_Osaka_Oik/AlignWithRNAseqPipelinePE_OSA/OSKA2016v1.9.gm.gtf')
+
+
+ce_BARtoBAR <- annotateCTSS(ce_BARtoBAR, gff_bar) |> suppressWarnings()
+ce_BARtoOKI <- annotateCTSS(ce_BARtoOKI, gff_oki) |> suppressWarnings()
+ce_BARtoOSA <- annotateCTSS(ce_BARtoOSA, gff_osa) |> suppressWarnings()
+
+ce_OKItoBAR <- annotateCTSS(ce_OKItoBAR, gff_bar) |> suppressWarnings()
+ce_OKItoOKI <- annotateCTSS(ce_OKItoOKI, gff_oki) |> suppressWarnings()
+ce_OKItoOSA <- annotateCTSS(ce_OKItoOSA, gff_osa) |> suppressWarnings()
+
+ce_OSAtoBAR <- annotateCTSS(ce_OSAtoBAR, gff_bar) |> suppressWarnings()
+ce_OSAtoOKI <- annotateCTSS(ce_OSAtoOKI, gff_oki) |> suppressWarnings()
+ce_OSAtoOSA <- annotateCTSS(ce_OSAtoOSA, gff_osa) |> suppressWarnings()
+
+# annotated results
+colData(ce_BARtoBAR)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_BARtoOKI)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_BARtoOSA)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+
+colData(ce_OKItoBAR)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_OKItoOKI)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_OKItoOSA)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+
+colData(ce_OSAtoBAR)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_OSAtoOKI)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+colData(ce_OSAtoOSA)[,c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')]
+
+# proportions
+colData(ce_BARtoBAR)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_BARtoOKI)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_BARtoOSA)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+
+colData(ce_OKItoBAR)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_OKItoOKI)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_OKItoOSA)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+
+colData(ce_OSAtoBAR)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_OSAtoOKI)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+colData(ce_OSAtoOSA)[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2)
+
+```
+
+```{r plot annotated results}
+
+plotAnnot(ce_BARtoBAR, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoBAR: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_BARtoOKI, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoOKI: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_BARtoOSA, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('BARtoOSA: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OKItoBAR, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoBAR: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OKItoOKI, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoOKI: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OKItoOSA, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OKItoOSA: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OSAtoBAR, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoBAR: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OSAtoOKI, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoOKI: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+plotAnnot(ce_OSAtoOSA, 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+    ylab('Fraction of tags aligned') +
+    xlab('Sample name') +
+    scale_y_continuous(guide = guide_axis(angle = 45)) +
+    theme(plot.subtitle=element_text(size=8, face="italic")) +
+    ggtitle('OSAtoOSA: Annotation of the aligned tags',
+            subtitle = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+```
+
+```{r correlate expression per chromosome}
+
+ce_BARtoBAR <- summariseChrExpr(ce_BARtoBAR)
+# seqNameTotalsSE(ce_BARtoBAR) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_BARtoBAR) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'BARtoBAR')
+
+ce_BARtoOKI <- summariseChrExpr(ce_BARtoOKI)
+# seqNameTotalsSE(ce_BARtoOKI) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_BARtoOKI) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'BARtoOKI')
+
+ce_BARtoOSA <- summariseChrExpr(ce_BARtoOSA)
+# seqNameTotalsSE(ce_BARtoOSA) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_BARtoOSA) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'BARtoOSA')
+
+ce_OKItoBAR <- summariseChrExpr(ce_OKItoBAR)
+# seqNameTotalsSE(ce_OKItoBAR) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OKItoBAR) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OKItoBAR')
+
+ce_OKItoOKI <- summariseChrExpr(ce_OKItoOKI)
+# seqNameTotalsSE(ce_OKItoOKI) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OKItoOKI) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OKItoOKI')
+
+ce_OKItoOSA <- summariseChrExpr(ce_OKItoOSA)
+# seqNameTotalsSE(ce_OKItoOSA) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OKItoOSA) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OKItoOSA')
+
+ce_OSAtoBAR <- summariseChrExpr(ce_OSAtoBAR)
+# seqNameTotalsSE(ce_OSAtoBAR) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OSAtoBAR) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OSAtoBAR')
+
+ce_OSAtoOKI <- summariseChrExpr(ce_OSAtoOKI)
+# seqNameTotalsSE(ce_OSAtoOKI) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OSAtoOKI) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OSAtoOKI')
+
+ce_OSAtoOSA <- summariseChrExpr(ce_OSAtoOSA)
+# seqNameTotalsSE(ce_OSAtoOSA) |> assay()
+# rough clustering
+seqNameTotalsSE(ce_OSAtoOSA) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = 'OSAtoOSA')
+
+```
+
+```{r reverse cumulative distribution of the CTSSes}
+
+colors_bar <- c("red", "red", "red",  "red", "blue",  "blue" ,"pink", "pink"  ,"pink","pink",  "green", "green",   "green", "green",  "green",  "green",  "green" ,  "green" )
+colors_oki <- c("red", "red", "pink", "pink", "blue", "blue", "lightblue", "lightblue","green", "green")
+colors_osa <- c("purple", "purple", "red", "red", "pink", "pink", "blue", "blue", "lightblue", "lightblue", "green", "green")
+
+ce_BARtoBAR <- setColors(ce_BARtoBAR, colors_bar)
+ce_BARtoOKI <- setColors(ce_BARtoOKI, colors_bar)
+ce_BARtoOSA <- setColors(ce_BARtoOSA, colors_bar)
+
+ce_OKItoBAR <- setColors(ce_OKItoBAR, colors_oki)
+ce_OKItoOKI <- setColors(ce_OKItoOKI, colors_oki)
+ce_OKItoOSA <- setColors(ce_OKItoOSA, colors_oki)
+
+ce_OSAtoBAR <- setColors(ce_OSAtoBAR, colors_osa)
+ce_OSAtoOKI <- setColors(ce_OSAtoOKI, colors_osa)
+ce_OSAtoOSA <- setColors(ce_OSAtoOSA, colors_osa)
+
+# commented out plots that don't work
+plotReverseCumulatives(ce_BARtoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+# plotReverseCumulatives(ce_BARtoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+# plotReverseCumulatives(ce_BARtoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+
+plotReverseCumulatives(ce_OKItoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+plotReverseCumulatives(ce_OKItoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+# plotReverseCumulatives(ce_OKItoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+
+plotReverseCumulatives(ce_OSAtoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+# plotReverseCumulatives(ce_OSAtoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+plotReverseCumulatives(ce_OSAtoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+
+```
+
+```{r exporting unclustered data to bed or bw - maybe, eval=FALSE, include=FALSE}
+
+# bed
+ce_BARtoBAR <- normalizeTagCount(ce_BARtoBAR)
+trks <- exportToTrack(ce_BARtoBAR, oneTrack = FALSE)
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce_BARtoBAR)[n]
+  rtracklayer::export.bed(trks[n], paste0("./data/", name, ".ctss.bed.gz"))
+}
+# bigWig
+for (n in seq_along(trks)) {
+  name <- sampleLabels(ce)[n]
+  trkL <- split(trks[[n]], strand(trks[[n]]), drop = TRUE)
+  trkL[['+']]@trackLine@description <- paste(name, " plus")
+  trkL[['-']]@trackLine@description <- paste(name, " plus")
+  rtracklayer::export.bw(trkL[['+']], paste0(name, ".plus.bw"))
+  rtracklayer::export.bw(trkL[['-']], paste0(name, ".minus.bw"))
+}
+
+```
+
+```{r saving modified CAGEexp objects}
+
+saveRDS(ce_BARtoBAR, file = './data/BARtoBAR.rds')
+saveRDS(ce_BARtoOKI, file = './data/BARtoOKI.rds')
+saveRDS(ce_BARtoOSA, file = './data/BARtoOSA.rds')
+
+saveRDS(ce_OKItoBAR, file = './data/OKItoBAR.rds')
+saveRDS(ce_OKItoOKI, file = './data/OKItoOKI.rds')
+saveRDS(ce_OKItoOSA, file = './data/OKItoOSA.rds')
+
+saveRDS(ce_OSAtoBAR, file = './data/OSAtoBAR.rds')
+saveRDS(ce_OSAtoOKI, file = './data/OSAtoOKI.rds')
+saveRDS(ce_OSAtoOSA, file = './data/OSAtoOSA.rds')
 
 ```

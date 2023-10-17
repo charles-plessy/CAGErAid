@@ -7,6 +7,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 BSgenomeToUse_BAR <- "BSgenome.Oidioi.OIST.Bar2.p4"
 BSgenomeToUse_OKI <- "BSgenome.Odioica.local.OKI2018.I69"
 BSgenomeToUse_OSA <- "BSgenome.Odioica.local.OSKA2016"
@@ -48,6 +49,10 @@ library('devtools')
 BAM files produced by HiSat2 are loaded in paired-end mode. Sample names are
 parsed from the file names.
 
+```{r}
+getwd()
+```
+
 # BAR reads to *genome*
 
 ```{r load BAM files - Barcelona reads}
@@ -63,7 +68,7 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
-  saveRDS(ce, file = paste0('./BARto', align_list[i], '.rds'))
+  saveRDS(ce, file = paste0('./data/BARto', align_list[i], '.rds'))
 }
 ```
 
@@ -82,7 +87,7 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
-  saveRDS(ce, file = paste0('./OKIto', align_list[i], '.rds'))
+  saveRDS(ce, file = paste0('./data/OKIto', align_list[i], '.rds'))
 }
 ```
 
@@ -102,6 +107,6 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
-  saveRDS(ce, file = paste0('./OSAto', align_list[i], '.rds'))
+  saveRDS(ce, file = paste0('./data/OSAto', align_list[i], '.rds'))
 }
 ```
