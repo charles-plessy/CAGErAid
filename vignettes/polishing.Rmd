@@ -18,7 +18,7 @@ library('devtools')
 library('CAGErAid')
 ```
 
-# Load in data from the [loading](./loading.Rmd) file
+# Load in data from the [loading](./vignettes/loading.Rmd) file
 
 ```{r load in data}
 ce_BARtoBAR <- readRDS('./data/BARtoBAR.rds')
