@@ -24,17 +24,17 @@ The goal of CAGErAid is to assist in using [CAGEr](https://rdrr.io/bioc/CAGEr/) 
 
 You can install the development version of CAGErAid from [GitHub](https://github.com/) with:
 
-```{r}
+```{r message=FALSE}
 # install.packages("devtools")
 devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
+
 ```
 
 ## Polishing data
 
-After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading.Rmd). To add metadata, use `quickPolish()` and `quickMQC()`.
+After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading.Rmd). 
 
 ```{r example}
-
 library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
@@ -46,7 +46,6 @@ ce <- readRDS(ce_path)
 The CAGEexp file could use some polishing on the sample names and a little more information on the samples themselves. To do that, we can use `quickPolish()`. To add metadata from the nf-core RNAseq pipeline QC, we call `quickMQC()`.
 
 ```{r polishing}
-
 ce <- ce |> 
   quickPolish(reads = 'bar') |> 
   quickMQC(guess_path = TRUE, check_multimap = TRUE)
@@ -56,7 +55,6 @@ ce <- ce |>
 To easily annotate data, we can use `quickGFF()`.
 
 ```{r annotation}
-
 gff_path <- system.file('extdata', 'Barcelona.gtf', package = 'CAGErAid')
 gff <- quickGFF(gff_path, types = c('transcript', 'exon'))
 ce <- CAGEr::annotateCTSS(ce, gff)

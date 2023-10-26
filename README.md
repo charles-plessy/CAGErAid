@@ -19,10 +19,7 @@ You can install the development version of CAGErAid from
 ``` r
 # install.packages("devtools")
 devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
-#> Downloading GitHub repo a-klarkowska/CAGErAid@HEAD
 #> CAGEr (0c79a3a59... -> 052116f7c...) [GitHub]
-#> Skipping 4 packages not available: SummarizedExperiment, S4Vectors, rtracklayer, BiocGenerics
-#> Downloading GitHub repo charles-plessy/CAGEr@HEAD
 #> zlibbioc     (1.46.0 -> 1.48.0) [CRAN]
 #> XVector      (0.40.0 -> 0.42.0) [CRAN]
 #> SparseArray  (NA     -> 1.2.0 ) [CRAN]
@@ -67,20 +64,16 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> DelayedMa... (1.22.6 -> 1.24.0) [CRAN]
 #> CAGEfightR   (1.20.0 -> 1.22.0) [CRAN]
 #> MultiAssa... (1.26.0 -> 1.28.0) [CRAN]
-#> Installing 44 packages: zlibbioc, XVector, SparseArray, S4Arrays, IRanges, S4Vectors, MatrixGenerics, BiocGenerics, GenomeInfoDbData, GenomeInfoDb, DelayedArray, Biobase, Rhtslib, BiocParallel, Rsamtools, Biostrings, SummarizedExperiment, GenomicRanges, vctrs, utf8, checkmate, ProtGenerics, AnnotationFilter, VariantAnnotation, BiocFileCache, KEGGREST, BiocIO, GenomicAlignments, biovizBase, BSgenome, ensembldb, GenomicFeatures, AnnotationDbi, biomaRt, Gviz, rtracklayer, InteractionSet, sparseMatrixStats, GenomicInteractions, GenomicFiles, BiocBaseUtils, DelayedMatrixStats, CAGEfightR, MultiAssayExperiment
-#> Installing packages into '/tmp/Rtmpf92dXp/temp_libpathcc051546c02fc'
-#> (as 'lib' is unspecified)
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpdoBmoS/remotescd0727857d65d/charles-plessy-CAGEr-052116f/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpG5McxH/remotesd4fc13fe6f4a4/charles-plessy-CAGEr-052116f/DESCRIPTION’ ... OK
 #> * preparing ‘CAGEr’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
 #> * checking for empty or unneeded directories
 #> * building ‘CAGEr_2.7.2.tar.gz’
-#> Installing package into '/tmp/Rtmpf92dXp/temp_libpathcc051546c02fc'
-#> (as 'lib' is unspecified)
+#> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpdoBmoS/remotescd0726d89481b/a-klarkowska-CAGErAid-eb800be/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpG5McxH/remotesd4fc145ca125/a-klarkowska-CAGErAid-c71aa0a/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -92,8 +85,6 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #>   File(s) containing such objects:
 #>     ‘CAGErAid/data/ce_clean.rds’ ‘CAGErAid/inst/extdata/ce_clean.rds’
 #> * building ‘CAGErAid_0.0.0.9000.tar.gz’
-#> Installing package into '/tmp/Rtmpf92dXp/temp_libpathcc051546c02fc'
-#> (as 'lib' is unspecified)
 ```
 
 ## Polishing data
@@ -102,11 +93,9 @@ After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa
 genomes, we can use
 [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp
 object. For details on how to load the data, see [this
-vignette](vignettes/loading.Rmd). To add metadata, use `quickPolish()`
-and `quickMQC()`.
+vignette](vignettes/loading.Rmd).
 
 ``` r
-
 library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
@@ -120,7 +109,6 @@ use `quickPolish()`. To add metadata from the nf-core RNAseq pipeline
 QC, we call `quickMQC()`.
 
 ``` r
-
 ce <- ce |> 
   quickPolish(reads = 'bar') |> 
   quickMQC(guess_path = TRUE, check_multimap = TRUE)
@@ -130,7 +118,6 @@ ce <- ce |>
 To easily annotate data, we can use `quickGFF()`.
 
 ``` r
-
 gff_path <- system.file('extdata', 'Barcelona.gtf', package = 'CAGErAid')
 gff <- quickGFF(gff_path, types = c('transcript', 'exon'))
 ce <- CAGEr::annotateCTSS(ce, gff)
