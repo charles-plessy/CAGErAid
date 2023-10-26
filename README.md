@@ -65,7 +65,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> CAGEfightR   (1.20.0 -> 1.22.0) [CRAN]
 #> MultiAssa... (1.26.0 -> 1.28.0) [CRAN]
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpG5McxH/remotesd4fc13fe6f4a4/charles-plessy-CAGEr-052116f/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpvebMt3/remotesd8b8a4c7f2f61/charles-plessy-CAGEr-052116f/DESCRIPTION’ ... OK
 #> * preparing ‘CAGEr’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -73,7 +73,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> * building ‘CAGEr_2.7.2.tar.gz’
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpG5McxH/remotesd4fc145ca125/a-klarkowska-CAGErAid-c71aa0a/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpvebMt3/remotesd8b8a4becde2/a-klarkowska-CAGErAid-e4d60da/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts

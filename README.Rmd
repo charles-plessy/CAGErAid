@@ -34,7 +34,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 
 After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading.Rmd). 
 
-```{r example}
+```{r example, message=FALSE}
 library(CAGErAid) |> suppressPackageStartupMessages()
 
 # load CAGEexp object - Barcelona reads aligned to Barcelona genome
