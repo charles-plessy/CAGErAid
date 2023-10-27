@@ -14,10 +14,12 @@ Suggests:
 Config/testthat/edition: 3
 Imports: 
     BiocGenerics,
-    CAGEr,
+    CAGEr (>= 2.7.1),
     graphics,
     rtracklayer,
     S4Vectors,
     SummarizedExperiment,
     utils
 URL: https://a-klarkowska.github.io/CAGErAid/
+Remotes:  
+    charles-plessy/CAGEr
