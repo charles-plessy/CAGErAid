@@ -1,13 +1,17 @@
 ---
 title: "loading"
-author: "Anna Klarkowska"
-date: "`r Sys.Date()`"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{loading}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 BSgenomeToUse_BAR <- "BSgenome.Oidioi.OIST.Bar2.p4"
 BSgenomeToUse_OKI <- "BSgenome.Odioica.local.OKI2018.I69"
 BSgenomeToUse_OSA <- "BSgenome.Odioica.local.OSKA2016"
@@ -49,9 +53,6 @@ library('devtools')
 BAM files produced by HiSat2 are loaded in paired-end mode. Sample names are
 parsed from the file names.
 
-```{r}
-getwd()
-```
 
 # BAR reads to *genome*
 

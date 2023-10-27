@@ -1,12 +1,17 @@
 ---
-title: "Clustering SL data - BAR to BAR"
-author: "Anna Klarkowska"
-date: "2023-10-18"
-output: html_document
+title: "clustering_SL_bartobar"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{clustering_SL_bartobar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 ```
 
 ```{r libraries}
@@ -84,6 +89,3 @@ cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> h
 # cctrack_sl <- makeBed(ce_sl, TRUE)
 rtracklayer::export.bed(cctrack_sl, "clusters_sl_bartobar.bed")
 ```
-
-
-
