@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Anna", "Klarkowska", , "a.klarkowska@oist.jp", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: CAGErAid provides a toolbox for smoother and quicker analysis of Oikopleura dioica cross-alignment data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -21,5 +21,5 @@ Imports:
     SummarizedExperiment,
     utils
 URL: https://a-klarkowska.github.io/CAGErAid/
-Remotes:  
+Remotes: 
     charles-plessy/CAGEr

@@ -13,7 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library('CAGEr')
 library('ggplot2'); theme_set(theme_minimal())
-library('pheatmap')
 library('BSgenome')
 library('patchwork')
 library('devtools')
@@ -85,20 +84,6 @@ cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> h
 # cctrack_sl <- makeBed(ce_sl, TRUE)
 rtracklayer::export.bed(cctrack_sl, "clusters_sl_bartobar.bed")
 ```
-Note: it would appear that all tracks that get exported have a score of 0 uniformly, becuase if qLow and qUp are set to NULL, exportToTrack() works, but the subsequent score() calls don't.
-
-#' @rdname exportToTrack
-
-setMethod( "exportToTrack", "ConsensusClusters"
-           , function( object, what, qLow, qUp
-                       , colorByExpressionProfile, oneTrack) {
-  score(object) <- 0L
-  exportToTrack( GRanges(object), qLow = qLow, qUp = qUp
-                 , colorByExpressionProfile = colorByExpressionProfile
-                 , oneTrack = oneTrack)
-})
-
-I think this chunk in CAGEr's ExportMethods.R might be at fault
 
 
 
