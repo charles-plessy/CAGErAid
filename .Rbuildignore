@@ -6,3 +6,6 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^loading\.Rmd$
+^polishing\.Rmd$
+^clustering_SL_bartobar\.Rmd$
