@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 library('CAGEr')
 library('ggplot2'); theme_set(theme_minimal())
 library('BSgenome')
-library('devtools')
 library('CAGErAid')
 
 ```
