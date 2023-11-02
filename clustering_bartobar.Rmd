@@ -91,24 +91,6 @@ ce_no <- quickClustersSL(ce_no, aggregate = T, gff)
 
 ```{r export to bed - SL}
 
-# # workaround with saving the scores beforehand
-# scores <- score(consensusClustersGR(ce_sl))
-# 
-# # cctrack_sl <- exportToTrack(ce_sl, "consensusClusters")#, qLow = 0.1, qUp = 0.9)
-# cctrack_sl <- consensusClustersGR(ce_sl, qL=.1, qU=.9, returnInterquantileWidth = TRUE) |>
-#   exportToTrack(qL=.1, qU=.9)
-# cctrack_sl$score <- scores
-# 
-# cctrack_sl@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
-# cctrack_sl@trackLine@name <- "sl"
-# # Flat AG
-# cctrack_sl$itemRgb <- ifelse(flagByUpstreamSequences(rowRanges(consensusClustersSE(ce_sl))$dominant_ctss, "AG"), "black", "grey")
-# 
-# cctrack_sl[cctrack_sl$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
-# cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
-# 
-# ####
-
 cctrack_sl <- makeBed(ce_sl, sl_found = TRUE)
 
 cctrack_sl[cctrack_sl$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
