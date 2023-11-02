@@ -25,25 +25,26 @@
 makeBed <- function(ce, sl_found){
   # with SL
   if (sl_found == TRUE) {
-    cctrack_sl <- CAGEr::exportToTrack(ce, "consensusClusters", qLow = 0.1, qUp = 0.9)
-    cctrack_sl@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
-    cctrack_sl@trackLine@name <- "sl"
+    scores <- BiocGenerics::score(CAGEr::consensusClustersGR(ce))
+    cctrack <- CAGEr::consensusClustersGR(ce, qL=.1, qU=.9, returnInterquantileWidth = TRUE) |>
+      CAGEr::exportToTrack(qL=.1, qU=.9)
+    cctrack$score <- scores
+    cctrack@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
+    cctrack@trackLine@name <- "sl"
     # Flat AG
-    cctrack_sl$itemRgb <- ifelse(CAGEr::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
-
-    cctrack_sl[cctrack_sl$itemRgb == "black"] |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)
-    cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> BiocGenerics::score() |> S4Vectors::decode() |> log10() |> graphics::hist(br=100)
-
-    cctrack_sl
+    cctrack$itemRgb <- ifelse(CAGEr::flagByUpstreamSequences(SummarizedExperiment::rowRanges(CAGEr::consensusClustersSE(ce))$dominant_ctss, "AG"), "black", "grey")
+    cctrack
   }
   else {
-    cctrack_no <- CAGEr::exportToTrack(ce, "consensusClusters", qLow = 0.1, qUp = 0.9)
-    cctrack_no@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
-    cctrack_no@trackLine@name <- "TSS"
+    scores <- BiocGenerics::score(CAGEr::consensusClustersGR(ce))
+    cctrack <- CAGEr::consensusClustersGR(ce, qL=.1, qU=.9, returnInterquantileWidth = TRUE) |>
+      CAGEr::exportToTrack(qL=.1, qU=.9)
+    cctrack$score <- scores
+    cctrack@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
+    cctrack@trackLine@name <- "TSS"
     # Flat the clusters of width 1.
-    cctrack_no$itemRgb <- ifelse(BiocGenerics::width(cctrack_no) > 1, "black", "grey")
-
-    cctrack_no
+    cctrack$itemRgb <- ifelse(BiocGenerics::width(cctrack) > 1, "black", "grey")
+    cctrack
   }
 
 }
