@@ -1,5 +1,5 @@
 ---
-title: "clustering_SL_bartobar"
+title: "clustering_bartobar"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{clustering_SL_bartobar}
@@ -48,9 +48,13 @@ ce_sl <- ce[, ce$SLfound] |>
   normalizeTagCount(method = "simpleTpm") |>
   annotateCTSS(gff)
 
+ce_no <- ce[, !ce$SLfound] |>
+  normalizeTagCount(method = "simpleTpm") |>
+  annotateCTSS(gff)
+
 ```
 
-```{r plot reverse cumulatives}
+```{r plot reverse cumulatives - SL}
 
 plotReverseCumulatives(ce_sl,
                        fitInRange = NULL,
@@ -64,13 +68,28 @@ plotReverseCumulatives(ce_sl,
 
 ```
 
-```{r simple clustering and aggregating}
+```{r plot reverse cumulatives - no SL}
 
-ce_sl <- quickClustersSL(ce_sl, aggregate = T, gff)
+plotReverseCumulatives(ce_no,
+                       fitInRange = NULL,
+                       values = "raw",
+                       onePlot = TRUE)
+
+plotReverseCumulatives(ce_no,
+                       fitInRange = NULL,
+                       values = "normalized",
+                       onePlot = TRUE)
 
 ```
 
-```{r export to bed - maybe}
+```{r simple clustering and aggregating}
+
+ce_sl <- quickClustersSL(ce_sl, aggregate = T, gff)
+ce_no <- quickClustersSL(ce_no, aggregate = T, gff)
+
+```
+
+```{r export to bed - SL}
 
 # # workaround with saving the scores beforehand
 # scores <- score(consensusClustersGR(ce_sl))
@@ -96,5 +115,16 @@ cctrack_sl[cctrack_sl$itemRgb == "black"] |> score() |> decode() |> log10() |> h
 cctrack_sl[cctrack_sl$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
 
 rtracklayer::export.bed(cctrack_sl, "./data/clusters_sl_bartobar.bed")
+
+```
+
+```{r export to bed - no SL}
+
+cctrack_no <- makeBed(ce_no, sl_found = FALSE)
+
+cctrack_no[cctrack_no$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br=100)
+cctrack_no[cctrack_no$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br=100)
+
+rtracklayer::export.bed(cctrack_no, "./data/clusters_no_bartobar.bed")
 
 ```
