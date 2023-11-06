@@ -69,6 +69,8 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  # add sample names and metadata
+  ce <- quickPolish(ce, 'bar')
   saveRDS(ce, file = paste0('./data/BARto', align_list[i], '.rds'))
 }
 ```
@@ -88,6 +90,7 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  ce <- quickPolish(ce, 'oki')
   saveRDS(ce, file = paste0('./data/OKIto', align_list[i], '.rds'))
 }
 ```
@@ -108,6 +111,8 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
+  ce <- quickPolish(ce, 'osa')
   saveRDS(ce, file = paste0('./data/OSAto', align_list[i], '.rds'))
 }
 ```
+
