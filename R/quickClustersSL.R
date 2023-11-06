@@ -24,7 +24,8 @@
 #' }
 #' @export
 quickClustersSL <- function(ce, aggregate = FALSE, gff = NULL) {
-  if (aggregate == FALSE) {
+  if (aggregate == TRUE & is.null(gff)) stop('Missing GFF, skipping aggregating CAGE tags. Supply GFF.')
+  else if (aggregate == FALSE) {
     ce <- ce |>
       CAGEr::normalizeTagCount(method = 'simpleTpm') |>
       CAGEr::clusterCTSS(
@@ -39,7 +40,7 @@ quickClustersSL <- function(ce, aggregate = FALSE, gff = NULL) {
       CAGEr::cumulativeCTSSdistribution() |>
       CAGEr::quantilePositions()
   }
-  if (aggregate == TRUE & is.null(gff) == FALSE) {
+  else if (aggregate == TRUE) {
     ce <- ce |>
       # the next 2 lines below are added bc idek anymore
       # seems to work at the very least
@@ -55,9 +56,7 @@ quickClustersSL <- function(ce, aggregate = FALSE, gff = NULL) {
       CAGEr::quantilePositions(clusters = "consensusClusters") |>
       CAGEr::annotateConsensusClusters(gff, up = 100, down = 0)
   }
-  else if (aggregate == TRUE & is.null(gff) == TRUE) {
-    print('Missing GFF, skipping aggregating CAGE tags. Supply GFF.')
-  }
+
   ce #ok something is clearly not going in aggregate true but idk why
   # seems to work if i pass minimal parameters to clusterCTSS?
 }

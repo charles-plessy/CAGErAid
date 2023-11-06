@@ -2,9 +2,7 @@
 % Please edit documentation in R/msScope_nfcore_rnaseq.R
 \name{msScope_nfcore_rnaseq}
 \alias{msScope_nfcore_rnaseq}
-\title{Function implementing the scope parameter of the \link{mapStats} function
-Credit: Charles Plessy
-Note: had to remove .checkLibsDataFrame, as it couldn't be imported from CAGEr}
+\title{Function implementing the scope parameter of the \link[CAGEr]{mapStats} function}
 \usage{
 msScope_nfcore_rnaseq(libs)
 }
@@ -19,7 +17,5 @@ provides the order of the stacked bars of the \code{plotAnnot} function,
 \code{total} indicates the total counts used for normalising the data.
 }
 \description{
-Function implementing the scope parameter of the \link{mapStats} function
 Credit: Charles Plessy
-Note: had to remove .checkLibsDataFrame, as it couldn't be imported from CAGEr
 }

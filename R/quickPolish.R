@@ -14,6 +14,7 @@
 #' }
 #' @export
 quickPolish <- function(ce, reads = c('bar', 'oki', 'osa')) {
+  version <- '3.12'
   if (reads == 'bar'){
     ce$SLfound  <- grepl('SL', CAGEr::sampleLabels(ce))
     ce$SLfactor <- ce$SLfound |>
@@ -30,7 +31,7 @@ quickPolish <- function(ce, reads = c('bar', 'oki', 'osa')) {
              ce$RNA, '. ',
              ifelse(ce$SLfound, 'A splice leader sequence was found and removed. ',
                     'no splice leader sequence was found. '),
-             'The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version 3.12.')
+             paste0('The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version ', version, "."))
   }
   if (reads == 'oki') {
     ce$SLfound <- grepl("SL", CAGEr::sampleLabels(ce))
@@ -48,7 +49,7 @@ quickPolish <- function(ce, reads = c('bar', 'oki', 'osa')) {
              ce$RNA, '. ',
              ifelse(ce$SLfound, "A splice leader sequence was found and removed. ",
                     "No splice leader sequence was found. "),
-             "The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version 3.12.")
+             paste0("The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version ", version, "."))
   }
   if (reads == 'osa') {
     ce$SLfound <- grepl("SL", CAGEr::sampleLabels(ce))
@@ -66,7 +67,7 @@ quickPolish <- function(ce, reads = c('bar', 'oki', 'osa')) {
              ce$RNA, '. ',
              ifelse(ce$SLfound, "A splice leader sequence was found and removed. ",
                     "No splice leader sequence was found. "),
-             "The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version 3.12.")
+             paste0("The reads where then aligned with HISAT2 using the nf-core RNA-seq pipeline version ", version, "."))
   }
   ce
 }

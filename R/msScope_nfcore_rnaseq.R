@@ -1,7 +1,6 @@
-#' Function implementing the scope parameter of the \link{mapStats} function
-#' Credit: Charles Plessy
-#' Note: had to remove .checkLibsDataFrame, as it couldn't be imported from CAGEr
-#'
+#' Function implementing the scope parameter of the \link[CAGEr]{mapStats} function
+#' @description Credit: Charles Plessy
+
 #' @param libs A data frame containing metadata describing samples in sequence libraries
 #'
 #' @return Returns a list with three elements: `libs` contains a modified

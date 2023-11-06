@@ -26,6 +26,7 @@
 #' }
 #' @export
 quickClustersNO <- function(ce, aggregate = FALSE, gff = NULL) {
+  if (aggregate == TRUE & is.null(gff)) stop('Missing GFF, skipping aggregating CAGE tags. Supply GFF.')
   if (aggregate == FALSE) {
     ce <- ce |>
       CAGEr::normalizeTagCount(method = 'simpleTpm') |>
@@ -35,7 +36,7 @@ quickClustersNO <- function(ce, aggregate = FALSE, gff = NULL) {
       CAGEr::cumulativeCTSSdistribution()                          |>
       CAGEr::quantilePositions()
   }
-  if (aggregate == TRUE & is.null(gff) == FALSE) {
+  if (aggregate == TRUE) {
     ce <- ce |>
       CAGEr::normalizeTagCount(method = 'simpleTpm') |>
       CAGEr::clusterCTSS( method = "distclu"

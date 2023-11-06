@@ -4,13 +4,7 @@
 \alias{quickMQC}
 \title{Imports QC data}
 \usage{
-quickMQC(
-  ce,
-  guess_path = TRUE,
-  hisat = NULL,
-  qc = NULL,
-  check_multimap = FALSE
-)
+quickMQC(ce, guess_path = TRUE, hisat = NULL, qc = NULL)
 }
 \arguments{
 \item{ce}{CAGEexp object}
@@ -20,8 +14,6 @@ quickMQC(
 \item{hisat}{table with multiqc_hisat2.txt data}
 
 \item{qc}{table with multiqc_general_stats.txt data}
-
-\item{check_multimap}{boolean, checks if all reads have been removed by the pipeline}
 }
 \value{
 CAGEexp object
@@ -31,7 +23,7 @@ Imports Hisat2 QC (multiqc_hisat2.txt) and general QC data (multiqc_general_stat
 }
 \examples{
 \dontrun{
-quickMQC(ce, guess_path = FALSE, hisat, qc, check_multimap = TRUE)
+quickMQC(ce, guess_path = FALSE, hisat, qc)
 }
 
 }
