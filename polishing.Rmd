@@ -22,7 +22,7 @@ library('devtools')
 library('CAGErAid')
 ```
 
-# Load in data from the [loading](./vignettes/loading.Rmd) file
+# Load in data from the [loading](./loading.Rmd) file
 
 ```{r load in data}
 
@@ -50,6 +50,8 @@ for (i in names(ce)) ce[[i]] <- quickMQC(ce[[i]])
 
 ```
 
+After collecting statistics from the pipeline above, we can plot the data to see the levels of alignment.
+
 ```{r ploting mapping stats}
 
 plotAnnot_ <- function(name)
@@ -65,6 +67,10 @@ for (name in names(ce)) plot(plotAnnot_(name))
 
 ```
 
+Surprisingly, there is a large fraction of unmapped tags in the OKItoOKI and OSAtoOSA alignments, despite SL sequences being found. This could be due to the HMM algorithm not actually recognising the correct SL sequences, even a small amount of genetic distance causing tags not to be aligned, or artifacts in sequencing. Needs to be examined further.
+
+Now we annotate the CTSSs and explore proportions of sequence features.
+
 ```{r annotating the CTSSs}
 
 # load GFF files
@@ -73,9 +79,9 @@ gff_oki <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2021-12-17_Okinaw
 gff_osa <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-02-09_Osaka_Oik/AlignWithRNAseqPipelinePE_OSA/OSKA2016v1.9.gm.gtf')
 
 
-for (i in grep('toBAR', names(ce))) suppressWarnings(annotateCTSS(ce[[i]], gff_bar))
-for (i in grep('toOKI', names(ce))) suppressWarnings(annotateCTSS(ce[[i]], gff_oki))
-for (i in grep('toOSA', names(ce))) suppressWarnings(annotateCTSS(ce[[i]], gff_osa))
+for (i in grep('toBAR', names(ce))) ce[[i]] <- annotateCTSS(ce[[i]], gff_bar) |> suppressWarnings()
+for (i in grep('toOKI', names(ce))) ce[[i]] <- annotateCTSS(ce[[i]], gff_oki) |> suppressWarnings()
+for (i in grep('toOSA', names(ce))) ce[[i]] <- annotateCTSS(ce[[i]], gff_osa) |> suppressWarnings()
 
 
 # annotated results
@@ -90,21 +96,26 @@ for (i in names(ce)) {
         }
 
 ```
+Now we can plot the annotated results to see the proportions of sequence features present in the data. 
 
 ```{r plot annotated results - normalized counts}
 
-plotAnnot_ <- function(name)
+plotAnnot_ <- function(name) {
   plotAnnot(ce[[name]], 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
       ylab('Fraction of tags aligned') +
       xlab('Sample name') +
       scale_y_continuous(guide = guide_axis(angle = 45)) +
       theme(plot.subtitle=element_text(size=8, face="italic")) +
       ggtitle(paste0(name, ': Annotation of the aligned tags'),
-              sub = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+              sub = 'The promoters are defined as the 1-kb window centered on the transcript start site.')}
 
 for (name in names(ce)) plot(plotAnnot_(name))
 
 ```
+
+The high proportions of promoters in SL data is due to SL signals being positioned close to ATG. The regions where SL is found can be considered to be more highly conserved. We can also explore the total tag count on the OSAtoOSA alignment.
+
+To check for mislabeling, we can roughly cluster the number of aligned tags per chromosome:
 
 ```{r correlate expression per chromosome}
 
@@ -112,11 +123,16 @@ roughClusters <- function(name) {
   seqNameTotalsSE(ce[[name]]) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = name)
 }
 
-# seqNameTotalsSE(ce_OSAtoOSA) |> assay()
-
-for (name in names(ce)) roughClusters(name)
+# sanity check
+roughClusters('BARtoBAR')
+roughClusters('OKItoOKI')
+roughClusters('OSAtoOSA')
 
 ```
+
+There are no suspicious outliers in the plots and the expression patterns are clustered together in SL samples and noSL samples correctly. 
+
+Plotting the reverse cumulative distribution reveals differences between the samples with and without SL found:
 
 ```{r reverse cumulative distribution of the CTSSes}
 
@@ -124,27 +140,23 @@ colors_bar <- c("red", "red", "red",  "red", "blue",  "blue" ,"pink", "pink"  ,"
 colors_oki <- c("red", "red", "pink", "pink", "blue", "blue", "lightblue", "lightblue","green", "green")
 colors_osa <- c("purple", "purple", "red", "red", "pink", "pink", "blue", "blue", "lightblue", "lightblue", "green", "green")
 
-# NOT CHECKED
+
 for (i in grep('BARto', names(ce))) ce[[i]] <- setColors(ce[[i]], colors_bar)
 for (i in grep('OKIto', names(ce))) ce[[i]] <- setColors(ce[[i]], colors_oki)
 for (i in grep('OSAto', names(ce))) ce[[i]] <- setColors(ce[[i]], colors_osa)
 
 
-# commented out plots that don't work
-# TBD
-plotReverseCumulatives(ce$BARtoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-# plotReverseCumulatives(ce$BARtoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-# plotReverseCumulatives(ce$BARtoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
 
-plotReverseCumulatives(ce$OKItoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-plotReverseCumulatives(ce$OKItoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-# plotReverseCumulatives(ce$OKItoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-
-plotReverseCumulatives(ce$OSAtoBAR, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-# plotReverseCumulatives(ce$OSAtoOKI, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
-plotReverseCumulatives(ce$OSAtoOSA, fitInRange = c(1e3, 1e5), values = "raw", onePlot = T) 
+plotReverseCumulatives(ce$BARtoBAR, fitInRange = c(1e3, 1e5), values = "raw")
+plotReverseCumulatives(ce$OKItoBAR, fitInRange = c(1e3, 1e5), values = "raw")
+plotReverseCumulatives(ce$OKItoOKI, fitInRange = c(1e3, 1e5), values = "raw")
+plotReverseCumulatives(ce$OSAtoBAR, fitInRange = c(1e3, 1e5), values = "raw")
+plotReverseCumulatives(ce$OSAtoOSA, fitInRange = c(1e3, 1e5), values = "raw")
 
 ```
+
+Some of the above cross-alignments couldn't be plotted due to an insufficient data. For the remaining cross-alignments, we see that the distribution in some samples (without SL) follows a more diagonal, straight line, and in some (SL found) the line of the distribution is more curved, not following a power law distribution. We can see that the two parts of the data differ, and should not be analysed together. Therefore, in the further steps, we will analyse SL and no-SL data separately.
+
 
 ```{r exporting unclustered data to bed or bw - maybe, eval=FALSE, include=FALSE}
 
@@ -169,6 +181,8 @@ for (i in names(ce)) {
 }
 
 ```
+
+Finally, we save the CAGEexp objects for the next steps of analysis.
 
 ```{r saving modified CAGEexp objects}
 

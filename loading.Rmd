@@ -13,8 +13,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 BSgenomeToUse_BAR <- "BSgenome.Oidioi.OIST.Bar2.p4"
-BSgenomeToUse_OKI <- "BSgenome.Odioica.local.OKI2018.I69"
-BSgenomeToUse_OSA <- "BSgenome.Odioica.local.OSKA2016"
+BSgenomeToUse_OKI <- "BSgenome.Oidioi.OIST.OKI2018.I69"
+BSgenomeToUse_OSA <- "BSgenome.Oidioi.OIST.OSKA2016v1.9"
 genome_list <- c(BSgenomeToUse_BAR, BSgenomeToUse_OKI, BSgenomeToUse_OSA)
 if(isFALSE(
   requireNamespace(
@@ -70,7 +70,7 @@ for (i in 1:3) {
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
   # add sample names and metadata
-  ce <- quickPolish(ce, 'bar')
+  ce <- quickPolish(ce)
   saveRDS(ce, file = paste0('./data/BARto', align_list[i], '.rds'))
 }
 ```
@@ -90,7 +90,7 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
-  ce <- quickPolish(ce, 'oki')
+  ce <- quickPolish(ce)
   saveRDS(ce, file = paste0('./data/OKIto', align_list[i], '.rds'))
 }
 ```
@@ -111,7 +111,7 @@ for (i in 1:3) {
                                , inputFilesType = "bamPairedEnd"
                                , row.names      = sampleLabels))
   ce <- getCTSS(ce, useMulticore = FALSE, correctSystematicG=FALSE, removeFirstG=FALSE)
-  ce <- quickPolish(ce, 'osa')
+  ce <- quickPolish(ce)
   saveRDS(ce, file = paste0('./data/OSAto', align_list[i], '.rds'))
 }
 ```
