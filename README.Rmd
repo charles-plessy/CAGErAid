@@ -47,7 +47,7 @@ The CAGEexp file could use some polishing on the sample names and a little more 
 
 ```{r polishing}
 ce <- ce |> 
-  quickPolish(reads = 'bar') |> 
+  quickPolish() |> 
   quickMQC(guess_path = TRUE)
 
 ```
