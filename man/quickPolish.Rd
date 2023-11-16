@@ -4,12 +4,10 @@
 \alias{quickPolish}
 \title{Polish CAGEexp data}
 \usage{
-quickPolish(ce, reads = c("bar", "oki", "osa"))
+quickPolish(ce)
 }
 \arguments{
 \item{ce}{CAGEexp object}
-
-\item{reads}{Barcelona, Okinawa or Osaka reads}
 }
 \value{
 CAGEexp object
@@ -19,6 +17,6 @@ Fixes sample names and adds metadata. Use before \code{\link[=quickMQC]{quickMQC
 }
 \examples{
 \dontrun{
-quickPolish(ce, reads = 'bar')
+quickPolish(ce)
 }
 }

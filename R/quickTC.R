@@ -23,12 +23,12 @@
 quickTC <- function(ce, sl_found) {
   if (sl_found == FALSE) {
     ce <- ce |>
-      CAGEr::normalizeTagCount(method = 'simpleTpm') |>
+      CAGEr::normalizeTagCount(method = 'powerLaw') |>
       CAGEr::clusterCTSS(method = "distclu"
                          , nrPassThreshold = 1
                          , threshold = 1
-                         , thresholdIsTpm = TRUE)    |>
-      CAGEr::cumulativeCTSSdistribution()                          |>
+                         , thresholdIsTpm = TRUE) |>
+      CAGEr::cumulativeCTSSdistribution() |>
       CAGEr::quantilePositions()
   }
   else {

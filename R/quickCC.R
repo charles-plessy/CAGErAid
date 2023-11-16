@@ -27,11 +27,12 @@
 quickCC <- function(ce, sl_found, gff) {
   if (sl_found == FALSE) {
     ce <- ce |>
-      CAGEr::normalizeTagCount(method = 'simpleTpm') |>
-      CAGEr::clusterCTSS( method = "distclu"
-                          , nrPassThreshold = 1 # Default.  We do not have replicates for all time points
-                          , threshold = 1
-                          , thresholdIsTpm = TRUE)    |>
+      CAGEr::clusterCTSS( method = "distclu",
+                          nrPassThreshold = 1, # Default.  We do not have replicates for all time points
+                          threshold = 1,
+                          thresholdIsTpm = TRUE,
+                          useMulticore = TRUE, # Deigo
+                          nrCores = 4)    |>
       CAGEr::aggregateTagClusters() |>
       CAGEr::cumulativeCTSSdistribution(clusters = "consensusClusters") |>
       CAGEr::quantilePositions(clusters = "consensusClusters") |>
@@ -39,10 +40,15 @@ quickCC <- function(ce, sl_found, gff) {
   }
   else {
     ce <- ce |>
-      # seems to work at the very least
-      # clusterCTSS not with paraclu bc it's copied from Okinawa Rmd, should be with paraclu
-      CAGEr::normalizeTagCount(method = 'simpleTpm') |>
-      CAGEr::clusterCTSS() |>
+      CAGEr::clusterCTSS(
+        method = "paraclu",
+        nrPassThreshold = 1,
+        threshold = 1,   # it allows low-score CTSS supported in other samples.
+        removeSingletons = TRUE,
+        keepSingletonsAbove = 1,
+        maxLength = 10L, # Keep them sharp
+        useMulticore = TRUE, # Deigo
+        nrCores = 4) |>
       CAGEr::aggregateTagClusters(
         maxDist = 10L,
         tpmThreshold = 10,

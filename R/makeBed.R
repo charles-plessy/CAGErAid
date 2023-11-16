@@ -10,7 +10,6 @@
 #' @importFrom CAGEr flagByUpstreamSequences
 #' @importFrom SummarizedExperiment rowRanges
 #' @importFrom CAGEr consensusClustersSE
-#' @importFrom BiocGenerics score
 #' @importFrom S4Vectors decode
 #' @importFrom graphics hist
 #' @importFrom rtracklayer export.bed
@@ -25,10 +24,8 @@
 makeBed <- function(ce, sl_found){
   # with SL
   if (sl_found == TRUE) {
-    scores <- BiocGenerics::score(CAGEr::consensusClustersGR(ce))
     cctrack <- CAGEr::consensusClustersGR(ce, qL=.1, qU=.9, returnInterquantileWidth = TRUE) |>
       CAGEr::exportToTrack(qL=.1, qU=.9)
-    cctrack$score <- scores
     cctrack@trackLine@description <- "CAGE Consensus Clusters for trans splicing sites"
     cctrack@trackLine@name <- "sl"
     # Flat AG
@@ -36,10 +33,8 @@ makeBed <- function(ce, sl_found){
     cctrack
   }
   else {
-    scores <- BiocGenerics::score(CAGEr::consensusClustersGR(ce))
     cctrack <- CAGEr::consensusClustersGR(ce, qL=.1, qU=.9, returnInterquantileWidth = TRUE) |>
       CAGEr::exportToTrack(qL=.1, qU=.9)
-    cctrack$score <- scores
     cctrack@trackLine@description <- "CAGE Consensus Clusters for transcription start sites"
     cctrack@trackLine@name <- "TSS"
     # Flat the clusters of width 1.
