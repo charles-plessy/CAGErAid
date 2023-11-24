@@ -13,7 +13,7 @@
 #' @export
 quickPolish <- function(ce) {
   v <- '3.12'
-  samples_bar <- c('14FE_no', '14FE_SL', '29FE_no', '29FE_SL', '41MA_no', '41MA_SL', 'D1D4_no', 'D1D4_SL', 'D4D5_no', 'D4D5_SL', 'Rep1_no', 'Rep1_SL', 'Rep2_no', 'Rep2_SL', 'Rep3_no', 'Rep3_SL', 'Rep4_no', 'Rep4_SL')
+  samples_bar <- c('X14FE_no', 'X14FE_SL', 'X29FE_no', 'X29FE_SL', 'X41MA_no', 'X41MA_SL', 'D1D4_no', 'D1D4_SL', 'D4D5_no', 'D4D5_SL', 'Rep1_no', 'Rep1_SL', 'Rep2_no', 'Rep2_SL', 'Rep3_no', 'Rep3_SL', 'Rep4_no', 'Rep4_SL')
   samples_oki <- c('DE1_no_T1', 'DE1_SL_T1', 'DE2_no_T1', 'DE2_SL_T1', 'EB1_no_T1', 'EB1_SL_T1', 'EB2_no_T1', 'EB2_SL_T1', 'EB3_no_T1', 'EB3_SL_T1')
   samples_osa <- c('D2_T1_no_T1', 'D2_T1_SL_T1', 'DE1_T1_no_T1', 'DE1_T1_SL_T1', 'DE2_T1_no_T1', 'DE2_T1_SL_T1', 'EB1_T1_no_T1', 'EB1_T1_SL_T1', 'EB2_T1_no_T1', 'EB2_T1_SL_T1', 'EB3_T1_no_T1', 'EB3_T1_SL_T1')
   ce$reads[CAGEr::sampleLabels(ce) %in% samples_bar] <- 'Bar'

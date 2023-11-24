@@ -4,16 +4,10 @@
 \alias{quickMQC}
 \title{Imports QC data}
 \usage{
-quickMQC(ce, guess_path = TRUE, hisat = NULL, qc = NULL)
+quickMQC(ce)
 }
 \arguments{
 \item{ce}{CAGEexp object}
-
-\item{guess_path}{boolean, if TRUE, checks if the multiqc_hisat2.txt and multiqc_general_stats.txt paths can be inferred from the input files in the CAGEexp object}
-
-\item{hisat}{table with multiqc_hisat2.txt data}
-
-\item{qc}{table with multiqc_general_stats.txt data}
 }
 \value{
 CAGEexp object
@@ -23,7 +17,7 @@ Imports Hisat2 QC (multiqc_hisat2.txt) and general QC data (multiqc_general_stat
 }
 \examples{
 \dontrun{
-quickMQC(ce, guess_path = FALSE, hisat, qc)
+quickMQC(ce)
 }
 
 }
