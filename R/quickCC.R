@@ -9,7 +9,7 @@
 #' @param ce CAGEexp object
 #' @param sl_found boolean, whether data contains samples with or without SL sequences
 #' @param gff GFF file
-#'
+#' @param nr_samples minimal number of experiments in CAGEexp required to consider CTSSs for clustering
 #' @return CAGEexp object
 #' @importFrom CAGEr normalizeTagCount
 #' @importFrom CAGEr clusterCTSS
@@ -24,11 +24,11 @@
 #' quickCC(ce, sl_found = TRUE, gff)
 #' }
 #' @export
-quickCC <- function(ce, sl_found, gff) {
+quickCC <- function(ce, sl_found, gff, nr_samples = 1) {
   if (sl_found == FALSE) {
     ce <- ce |>
       CAGEr::clusterCTSS( method = "distclu",
-                          nrPassThreshold = 1, # Default.  We do not have replicates for all time points
+                          nrPassThreshold = nr_samples,
                           threshold = 1,
                           thresholdIsTpm = TRUE,
                           useMulticore = TRUE, # Deigo
@@ -42,7 +42,7 @@ quickCC <- function(ce, sl_found, gff) {
     ce <- ce |>
       CAGEr::clusterCTSS(
         method = "paraclu",
-        nrPassThreshold = 1,
+        nrPassThreshold = nr_samples,
         threshold = 1,   # it allows low-score CTSS supported in other samples.
         removeSingletons = TRUE,
         keepSingletonsAbove = 1,

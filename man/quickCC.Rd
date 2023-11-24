@@ -4,7 +4,7 @@
 \alias{quickCC}
 \title{Aggregates tag clusters into consensus clusters}
 \usage{
-quickCC(ce, sl_found, gff)
+quickCC(ce, sl_found, gff, nr_samples = 1)
 }
 \arguments{
 \item{ce}{CAGEexp object}
@@ -12,6 +12,8 @@ quickCC(ce, sl_found, gff)
 \item{sl_found}{boolean, whether data contains samples with or without SL sequences}
 
 \item{gff}{GFF file}
+
+\item{nr_samples}{minimal number of experiments in CAGEexp required to consider CTSSs for clustering}
 }
 \value{
 CAGEexp object
