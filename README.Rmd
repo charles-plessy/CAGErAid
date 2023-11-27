@@ -32,7 +32,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 
 ## Polishing data
 
-After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading.Rmd). 
+After cross-aligning CAGE reads to the Barcelona, Osaka and Okinawa genomes, we can use [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html) on a CAGEexp object. For details on how to load the data, see [this vignette](vignettes/loading_polishing.Rmd). 
 
 ```{r example, message=FALSE}
 library(CAGErAid) |> suppressPackageStartupMessages()
@@ -48,7 +48,7 @@ The CAGEexp file could use some polishing on the sample names and a little more 
 ```{r polishing}
 ce <- ce |> 
   quickPolish() |> 
-  quickMQC(guess_path = TRUE)
+  quickMQC()
 
 ```
 
@@ -60,3 +60,5 @@ gff <- quickGFF(gff_path, types = c('transcript', 'exon'))
 ce <- CAGEr::annotateCTSS(ce, gff)
 
 ```
+
+For more details on the cross-alignments analysis workflow, consult the vignettes on [loading](vignettes/loading.Rmd) the data, [polishing it and basic stats analysis](vignettes/polishing.Rmd), and clustering of [SL-containing samples](vignettes/clustering_sl.Rmd) and [samples without SL](vignettes/clustering_no.Rmd).

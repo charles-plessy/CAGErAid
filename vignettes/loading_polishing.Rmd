@@ -1,0 +1,115 @@
+---
+title: "Loading and polishing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{loading_polishing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(CAGErAid) |> suppressPackageStartupMessages()
+library(CAGEr) |> suppressPackageStartupMessages()
+library(S4Vectors) |> suppressPackageStartupMessages()
+library(SummarizedExperiment) |> suppressPackageStartupMessages()
+library(ggplot2); theme_set(theme_bw())
+```
+
+This vignette uses a limited number of samples from the cross-alignments experiment. To extract CTSS data, see [`getCTSS()`](https://rdrr.io/bioc/CAGEr/man/getCTSS.html). Let's load and examine the pre-extracted CTSS data:
+
+```{r load in data}
+
+ce_path <- system.file("extdata/example_CAGEexp", package="CAGErAid") |>
+  list.files(pattern = '*toOSA.rds', full.names = TRUE)
+
+ce <- SimpleList()
+ce$OKItoOSA <- readRDS(ce_path[1])
+ce$OSAtoOSA <- readRDS(ce_path[2])
+
+sapply(ce, \(x) colData(x))
+
+```
+
+The data contains the first two samples from the Okinawa and Osaka O. dioica reads aligned to the Osaka genome, one with splice leader sequences removed, and one containing splice leader sequences. To get more information on the samples and statistics from the nf-core pipeline, let's use `quickPolish()` and `quickMQC()`.
+
+```{r quickPolish}
+
+ce <- sapply(ce, \(x) quickPolish(x))
+sapply(ce, \(x) colData(x))
+
+```
+
+```{r quickMQC}
+
+ce <- sapply(ce, \(x) quickMQC(x))
+sapply(ce, \(x) colData(x))
+
+```
+
+After adding the statistics metadata from the pipeline, we can visualise them to compare the levels of aligned reads to the genome.
+
+```{r plot stats, fig.height=3, fig.width=10}
+
+plotAnnot_ <- function(name)
+  CAGEr::plotAnnot(ce[[name]], msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+      ylab('Number of tags processed') +
+      xlab('Sample name') +
+      scale_y_continuous(guide = guide_axis(angle = 45)) +
+      theme(plot.subtitle=element_text(size=8, face="italic")) +
+      ggtitle(paste0(name, ': QC report of CAGE library alignment'),
+              sub = 'The splice leader sequence was detected and removed before alignment')
+
+for (name in names(ce)) plot(plotAnnot_(name))
+```
+
+There are noticeably less Okinawa reads mapped to the Osaka genome, but there is still a substantial number of unmapped Osaka reads. We can also see the difference in the SL-containing samples and those with SL removed.
+
+Let's annotate the CTSSs and examine the proportions of sequence elements in the data, starting with loading the GFF file with `quickGFF()`:
+
+```{r annotate CTSSs, fig.height=3, fig.width=10}
+
+gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |> 
+  quickGFF()
+
+ce <- sapply(ce, \(x) annotateCTSS(x, gff)) |> suppressWarnings()
+
+for (i in names(ce)) {
+  print(names(ce[i]))
+  print(colData(ce[[i]])[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2))
+        }
+
+plotAnnot_ <- function(name) {
+  plotAnnot(ce[[name]], 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+      ylab('Fraction of tags aligned') +
+      xlab('Sample name') +
+      scale_y_continuous(guide = guide_axis(angle = 45)) +
+      theme(plot.subtitle=element_text(size=8, face="italic")) +
+      ggtitle(paste0(name, ': Annotation of the aligned tags'),
+              sub = 'The promoters are defined as the 1-kb window centered on the transcript start site.')}
+
+for (name in names(ce)) plot(plotAnnot_(name))
+
+```
+
+```{r set colors and plot reverse cumulatives}
+colors <- c('blue', 'red', 'blue', 'red')
+ce <- sapply(ce, \(x) setColors(x, colors))
+
+plotReverseCumulatives(ce$OKItoOSA, values = "raw")
+plotReverseCumulatives(ce$OSAtoOSA, values = "raw")
+```
+
+We can see that the samples without SL (blue) roughly follow a power-law distribution, while the SL samples do not (red). This can be used for choosing an appropriate method for normalization. Finally, we can save the polished data for further steps: clustering of either [the SL-containing samples](vignettes/clustering_sl.Rmd) or [samples without SL](vignettes/clustering_no.Rmd).
+
+```{r save data}
+saveRDS(ce$OKItoOSA, file = './inst/extdata/example_CAGEexp/OKItoOSA_polished.rds')
+saveRDS(ce$OSAtoOSA, file = './inst/extdata/example_CAGEexp/OSAtoOSA_polished.rds')
+```
+
