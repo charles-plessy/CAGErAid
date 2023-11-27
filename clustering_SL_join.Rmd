@@ -1,0 +1,93 @@
+---
+title: "clustering_SL_join"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{clustering_SL_join}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r libraries}
+
+library('CAGEr')
+library('ggplot2'); theme_set(theme_bw())
+library('CAGErAid')
+
+```
+
+```{r load in data}
+
+ce <- SimpleList()
+ce$toBAR <- readRDS('./data/polished/toBAR.rds')
+ce$toOKI <- readRDS('./data/polished/toOKI.rds')
+ce$toOSA <- readRDS('./data/polished/toOSA.rds')
+
+```
+
+# Clustering
+
+Separate SL containing samples
+
+```{r}
+
+for (i in names(ce)) {
+  ce[[i]] <- ce[[i]][, ce[[i]]$SLfound]
+  plotReverseCumulatives(ce[[i]],
+                       fitInRange = NULL,
+                       values = "raw")
+  
+  ce[[i]] <- ce[[i]] |> normalizeTagCount(method = 'simpleTpm') |> suppressWarnings()
+  plotReverseCumulatives(ce[[i]],
+                       fitInRange = NULL,
+                       values = "normalized")
+
+}
+
+```
+
+```{r annotate the CAGEexp object}
+
+# annotate the CAGEexp objects
+ce$toBAR <- annotateCTSS(ce$toBAR, gff_bar) |> suppressWarnings()
+ce$toOKI <- annotateCTSS(ce$toOKI, gff_oki) |> suppressWarnings()
+ce$toOSA <- annotateCTSS(ce$toOSA, gff_osa) |> suppressWarnings()
+
+```
+
+```{r simple clustering and aggregating}
+
+ce$toBAR <- quickCC(ce$toBAR, sl_found = TRUE, gff_bar, nr_samples = 20)
+ce$toOKI <- quickCC(ce$toOKI, sl_found = TRUE, gff_oki, nr_samples = 20)
+ce$toOSA <- quickCC(ce$toOSA, sl_found = TRUE, gff_osa, nr_samples = 20)
+
+```
+
+```{r saving clustered data}
+
+saveRDS(ce$toBAR, file = './data/clustered/toBAR_SL_conserved.rds')
+saveRDS(ce$toOKI, file = './data/clustered/toOKI_SL_conserved.rds')
+saveRDS(ce$toOSA, file = './data/clustered/toOSA_SL_conserved.rds')
+
+```
+
+```{r export to bed}
+
+for (i in names(ce)) {
+  cctrack <- makeBed(ce[[i]], sl_found = TRUE)
+  
+  cctrack[cctrack$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br =
+                                                                                 100)
+  cctrack[cctrack$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br =
+                                                                                 100)
+
+  rtracklayer::export.bed(cctrack, paste0('./data/bed/conserved_clusters_sl_', i, '_join.bed'))
+}
+
+```

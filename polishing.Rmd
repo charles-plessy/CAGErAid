@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ```{r libraries}
 library('CAGEr')
-library('ggplot2'); theme_set(theme_minimal())
+library('ggplot2'); theme_set(theme_bw())
 library('pheatmap')
 library('devtools')
 library('CAGErAid')

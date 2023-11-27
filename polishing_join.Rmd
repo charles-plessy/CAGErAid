@@ -1,0 +1,158 @@
+---
+title: "polishing_join"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{polishing_join}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r libraries}
+library('CAGEr')
+library('ggplot2'); theme_set(theme_minimal())
+library('pheatmap')
+library('devtools')
+library('CAGErAid')
+```
+
+# Load in data from the [loading](./loading.Rmd) file
+
+```{r load in data}
+
+ce <- SimpleList()
+ce$toBAR <- readRDS('./data/join/toBAR.rds')
+ce$toOKI <- readRDS('./data/join/toOKI.rds')
+ce$toOSA <- readRDS('./data/join/toOSA.rds')
+
+```
+
+
+# Adding Hisat2 and general QC stats to metadata
+
+```{r hisat2 and general stats QC}
+
+for (i in names(ce)) ce[[i]] <- quickMQC(ce[[i]])
+
+```
+
+```{r ploting mapping stats}
+
+plotAnnot_ <- function(name)
+  plotAnnot(ce[[name]], msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
+      ylab('Number of tags processed') +
+      xlab('Sample name') +
+      scale_y_continuous(guide = guide_axis(angle = 45)) +
+      theme(plot.subtitle=element_text(size=8, face="italic")) +
+      ggtitle(paste0(name, ': QC report of CAGE library alignment'),
+              sub = 'The splice leader sequence was detected and removed before alignment')
+
+
+for (name in names(ce)) plot(plotAnnot_(name))
+
+
+```
+
+```{r annotating the CTSSs}
+
+# load GFF files
+gff_bar <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-11-09_Barcelona_Oik/AlignWithRNAseqPipelinePE_BAR/Bar2_p4.gm.gtf')
+gff_oki <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2021-12-17_Okinawa_Oik/AlignWithRNAseqPipelinePE_OKI/Okinawa.genes.gtf')
+gff_osa <- quickGFF('/bucket/LuscombeU/live/CharlesPlessy/CAGE/2022-02-09_Osaka_Oik/AlignWithRNAseqPipelinePE_OSA/OSKA2016v1.9.gm.gtf')
+
+
+ce$toBAR <- annotateCTSS(ce$toBAR, gff_bar)
+ce$toOKI <- annotateCTSS(ce$toOKI, gff_oki)
+ce$toOSA <- annotateCTSS(ce$toOSA, gff_osa)
+
+
+# annotated results
+for (i in names(ce)) {
+  print(names(ce[i]))
+  print(colData(ce[[i]])[, c('librarySizes', 'promoter', 'exon', 'intron', 'unknown')])}
+
+# proportions
+for (i in names(ce)) {
+  print(names(ce[i]))
+  print(colData(ce[[i]])[,c('promoter', 'exon', 'intron', 'unknown')] |> as.matrix() |> prop.table(1)  |> round(2))
+        }
+
+```
+
+```{r plot annotated results - normalized counts}
+
+plotAnnot_ <- function(name)
+  plotAnnot(ce[[name]], 'counts', group = 'RNA', facet = 'SLfactor', normalise = TRUE) +
+      ylab('Fraction of tags aligned') +
+      xlab('Sample name') +
+      scale_y_continuous(guide = guide_axis(angle = 45)) +
+      theme(plot.subtitle=element_text(size=8, face="italic")) +
+      ggtitle(paste0(name, ': Annotation of the aligned tags'),
+              sub = 'The promoters are defined as the 1-kb window centered on the transcript start site.')
+
+for (name in names(ce)) plot(plotAnnot_(name))
+
+
+```
+
+```{r correlate expression per chromosome}
+
+roughClusters <- function(name) {
+  seqNameTotalsSE(ce[[name]]) |> assay() |> cor(meth='spe') |> pheatmap::pheatmap(main = name)
+}
+
+# seqNameTotalsSE(ce_OSAtoOSA) |> assay()
+
+for (name in names(ce)) roughClusters(name)
+
+```
+
+```{r reverse cumulative distribution of the CTSSes}
+
+colors <- c('darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'darkgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'lightgreen', 'darkblue', 'darkblue', 'darkblue', 'darkblue', 'lightblue', 'lightblue', 'lightblue', 'lightblue', 'lightblue', 'lightblue', 'red', 'red', 'darkred', 'darkred', 'darkred', 'darkred', 'pink', 'pink', 'pink', 'pink', 'pink', 'pink')
+
+for (i in names(ce)) ce[[i]] <- setColors(ce[[i]], colors)
+
+plotReverseCumulatives(ce$toBAR, fitInRange = c(1e3, 1e5), values = "raw") 
+plotReverseCumulatives(ce$toOKI, fitInRange = c(1e3, 1e5), values = "raw") 
+plotReverseCumulatives(ce$toOSA, fitInRange = c(1e3, 1e5), values = "raw") 
+
+```
+
+```{r exporting unclustered data to bed or bw - maybe, eval=FALSE, include=FALSE}
+
+# bed
+for (i in names(ce)) {
+  ce[[i]] <- normalizeTagCount(ce[[i]])
+  trks <- exportToTrack(ce[[i]], oneTrack = FALSE)
+  for (n in seq_along(trks)) {
+    name <- sampleLabels(ce[[i]])[n]
+    rtracklayer::export.bed(trks[n], paste0("./data/bed/unclustered_", name, ".ctss.bed.gz"))
+  }
+
+# bigWig
+  for (n in seq_along(trks)) {
+    name <- sampleLabels(ce[[i]])[n]
+    trkL <- split(trks[[n]], strand(trks[[n]]), drop = TRUE)
+    trkL[['+']]@trackLine@description <- paste(name, " plus")
+    trkL[['-']]@trackLine@description <- paste(name, " plus")
+    rtracklayer::export.bw(trkL[['+']], paste0("./data/bw/unclustered_", name, ".plus.bw"))
+    rtracklayer::export.bw(trkL[['-']], paste0("./data/bw/unclustered_", name, ".minus.bw"))
+  }
+}
+
+```
+
+```{r saving modified CAGEexp objects}
+
+saveRDS(ce$toBAR, file = './data/polished/toBAR.rds')
+saveRDS(ce$toOKI, file = './data/polished/toOKI.rds')
+saveRDS(ce$toOSA, file = './data/polished/toOSA.rds')
+
+```

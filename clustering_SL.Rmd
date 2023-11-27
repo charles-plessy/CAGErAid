@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 # note that the plotReverseCumulatives function does not work well with this branch
 
 library('CAGEr')
-library('ggplot2'); theme_set(theme_m())
+library('ggplot2'); theme_set(theme_bw())
 library('CAGErAid')
 
 ```
