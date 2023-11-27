@@ -16,7 +16,7 @@ library('CAGEr') |> suppressPackageStartupMessages()
 library('ggplot2'); theme_set(theme_bw())
 ```
 
-Let's load in the polished data from [the previous vignette](vignettes/loading_polishing.Rmd):
+Let's load in the polished data from [the previous vignette](loading_polishing.html):
 
 
 ```r
@@ -48,7 +48,7 @@ for (i in names(ce)) {
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'raw')))
 ```
 
-![plot of chunk plot reverse cumulatives raw no](plot reverse cumulatives raw no-1.png)![plot of chunk plot reverse cumulatives raw no](plot reverse cumulatives raw no-2.png)
+![](plot reverse cumulatives raw no-1.png)![](plot reverse cumulatives raw no-2.png)
 
 ```
 #>             OKItoOSA         OSAtoOSA        
@@ -77,7 +77,7 @@ ce <- sapply(ce, \(x) normalizeTagCount(x, method = 'powerLaw')) |>
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'normalized')))
 ```
 
-![plot of chunk plot normalized reverse cumulatives norm no](plot normalized reverse cumulatives norm no-1.png)![plot of chunk plot normalized reverse cumulatives norm no](plot normalized reverse cumulatives norm no-2.png)
+![](plot normalized reverse cumulatives norm no-1.png)![](plot normalized reverse cumulatives norm no-2.png)
 
 ```
 #>             OKItoOSA         OSAtoOSA        

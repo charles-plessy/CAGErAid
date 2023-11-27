@@ -21,7 +21,7 @@ library('CAGEr') |> suppressPackageStartupMessages()
 library('ggplot2'); theme_set(theme_bw())
 ```
 
-Let's load in the polished data from [the previous vignette](vignettes/loading_polishing.Rmd):
+Let's load in the polished data from [the previous vignette](loading_polishing.html):
 
 ```{r load in data}
 ce_path <- system.file("extdata/example_CAGEexp", package="CAGErAid") |>

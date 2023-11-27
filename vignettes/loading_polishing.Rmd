@@ -173,14 +173,14 @@ for (name in names(ce)) plot(plotAnnot_(name))
 #> Warning: Removed 20 rows containing missing values (`geom_point()`).
 ```
 
-![plot of chunk plot stats](plot stats-1.png)
+![](plot stats-1.png)
 
 ```
 #> Warning: Removed 20 rows containing missing values (`geom_segment()`).
 #> Removed 20 rows containing missing values (`geom_point()`).
 ```
 
-![plot of chunk plot stats](plot stats-2.png)
+![](plot stats-2.png)
 
 There are noticeably less Okinawa reads mapped to the Osaka genome, but there is still a substantial number of unmapped Osaka reads. We can also see the difference in the SL-containing samples and those with SL removed.
 
@@ -225,14 +225,14 @@ for (name in names(ce)) plot(plotAnnot_(name))
 #> Warning: Removed 16 rows containing missing values (`geom_point()`).
 ```
 
-![plot of chunk annotate CTSSs](annotate CTSSs-1.png)
+![](annotate CTSSs-1.png)
 
 ```
 #> Warning: Removed 16 rows containing missing values (`geom_segment()`).
 #> Removed 16 rows containing missing values (`geom_point()`).
 ```
 
-![plot of chunk annotate CTSSs](annotate CTSSs-2.png)
+![](annotate CTSSs-2.png)
 
 
 ```r
@@ -242,15 +242,15 @@ ce <- sapply(ce, \(x) setColors(x, colors))
 plotReverseCumulatives(ce$OKItoOSA, values = "raw")
 ```
 
-![plot of chunk set colors and plot reverse cumulatives](set colors and plot reverse cumulatives-1.png)
+![](set colors and plot reverse cumulatives-1.png)
 
 ```r
 plotReverseCumulatives(ce$OSAtoOSA, values = "raw")
 ```
 
-![plot of chunk set colors and plot reverse cumulatives](set colors and plot reverse cumulatives-2.png)
+![](set colors and plot reverse cumulatives-2.png)
 
-We can see that the samples without SL (blue) roughly follow a power-law distribution, while the SL samples do not (red). This can be used for choosing an appropriate method for normalization. Finally, we can save the polished data for further steps: clustering of either [the SL-containing samples](vignettes/clustering_sl.Rmd) or [samples without SL](vignettes/clustering_no.Rmd).
+We can see that the samples without SL (blue) roughly follow a power-law distribution, while the SL samples do not (red). This can be used for choosing an appropriate method for normalization. Finally, we can save the polished data for further steps: clustering of either [the SL-containing samples](clustering_sl.html) or [samples without SL](clustering_no.html).
 
 
 

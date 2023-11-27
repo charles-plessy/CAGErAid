@@ -107,7 +107,7 @@ plotReverseCumulatives(ce$OKItoOSA, values = "raw")
 plotReverseCumulatives(ce$OSAtoOSA, values = "raw")
 ```
 
-We can see that the samples without SL (blue) roughly follow a power-law distribution, while the SL samples do not (red). This can be used for choosing an appropriate method for normalization. Finally, we can save the polished data for further steps: clustering of either [the SL-containing samples](vignettes/clustering_sl.Rmd) or [samples without SL](vignettes/clustering_no.Rmd).
+We can see that the samples without SL (blue) roughly follow a power-law distribution, while the SL samples do not (red). This can be used for choosing an appropriate method for normalization. Finally, we can save the polished data for further steps: clustering of either [the SL-containing samples](clustering_sl.html) or [samples without SL](clustering_no.html).
 
 ```{r save data, eval=FALSE, include=FALSE}
 saveRDS(ce$OKItoOSA, file = './inst/extdata/example_CAGEexp/OKItoOSA_polished.rds')
