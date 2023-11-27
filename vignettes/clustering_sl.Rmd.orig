@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = ""
 )
 ```
 
@@ -34,13 +35,13 @@ ce$OSAtoOSA <- readRDS(ce_path[2])
 Let's also load in the GFF file for annotating clusters:
 
 ```{r load in GFF}
-gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |> 
+gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |>
   quickGFF()
 ```
 
 We separate SL containing samples and check for power law distribution.
 
-```{r plot reverse cumulatives, fig.height=4, fig.width=6}
+```{r plot reverse cumulatives raw sl, fig.height=4, fig.width=6}
 
 for (i in names(ce)) {
   ce[[i]] <- ce[[i]][, ce[[i]]$SLfound]
@@ -52,7 +53,7 @@ sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'raw'
 
 As seen in the reverse cumulative plot, samples with SL do not follow a power law distribution. In this case we use simple TPM normalization.
 
-```{r plot normalized reverse cumulatives, fig.height=4, fig.width=6}
+```{r plot normalized reverse cumulatives norm sl, fig.height=4, fig.width=6}
 
 ce <- sapply(ce, \(x) normalizeTagCount(x, method = 'simpleTpm')) |>
   suppressWarnings()
@@ -69,13 +70,13 @@ ce <- sapply(ce, \(x) annotateCTSS(x, gff)) |> suppressWarnings()
 Now we can find consensus clusters with the use of `quickCC()`. For SL-containing samples, the function uses the paraclu algorithm.
 
 ```{r consensus clusters}
-ce <- sapply(ce, \(x) quickCC(x, sl_found = TRUE, gff = gff, nr_samples = 1)) |> 
+ce <- sapply(ce, \(x) quickCC(x, sl_found = TRUE, gff = gff, nr_samples = 1)) |>
   suppressWarnings()
 ```
 
 Finally, we can save the CAGEexp objects and export the data to the bed format for visualisation.
 
-```{r save and export, eval=FALSE, fig.height=4, fig.width=6, include=FALSE}
+```{r save and export sl, eval=FALSE, fig.height=4, fig.width=6, include=FALSE}
 saveRDS(ce$OKItoOSA, file = './inst/extdata/example_CAGEexp/OKItoOSA_SL.rds')
 saveRDS(ce$OSAtoOSA, file = './inst/extdata/example_CAGEexp/OSAtoOSA_SL.rds')
 

@@ -61,4 +61,4 @@ ce <- CAGEr::annotateCTSS(ce, gff)
 
 ```
 
-For more details on the cross-alignments analysis workflow, consult the vignettes on [loading](vignettes/loading.Rmd) the data, [polishing it and basic stats analysis](vignettes/polishing.Rmd), and clustering of [SL-containing samples](vignettes/clustering_sl.Rmd) and [samples without SL](vignettes/clustering_no.Rmd).
+For more details on the cross-alignments analysis workflow, consult the vignettes on [loading the data, polishing it and basic stats analysis](vignettes/loading_polishing.Rmd), and clustering of [SL-containing samples](vignettes/clustering_sl.Rmd) and [samples without SL](vignettes/clustering_no.Rmd).

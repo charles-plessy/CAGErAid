@@ -25,18 +25,15 @@ ce_path <- system.file("extdata/example_CAGEexp", package="CAGErAid") |>
 
 ce <- SimpleList()
 ce$OKItoOSA <- readRDS(ce_path[1])
-#> Error in gzfile(file, "rb"): invalid 'description' argument
 ce$OSAtoOSA <- readRDS(ce_path[2])
-#> Error in gzfile(file, "rb"): invalid 'description' argument
 ```
 
 Let's also load in the GFF file for annotating clusters:
 
 
 ```r
-gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |> 
+gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |>
   quickGFF()
-#> Error in h(simpleError(msg, call)): error in evaluating the argument 'con' in selecting a method for function 'import': Cannot detect format (no extension found in file name)
 ```
 
 We separate samples without SL and check for power law distribution.
@@ -49,7 +46,21 @@ for (i in names(ce)) {
 }
 
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'raw')))
-#> list()
+```
+
+![plot of chunk plot reverse cumulatives raw no](plot reverse cumulatives raw no-1.png)![plot of chunk plot reverse cumulatives raw no](plot reverse cumulatives raw no-2.png)
+
+```
+#>             OKItoOSA         OSAtoOSA        
+#> data        data.frame,5     data.frame,5    
+#> layers      list,1           list,1          
+#> scales      ScalesList,2     ScalesList,2    
+#> mapping     uneval,3         uneval,3        
+#> theme       list,0           list,0          
+#> coordinates CoordCartesian,5 CoordCartesian,5
+#> facet       FacetWrap,3      FacetWrap,3     
+#> plot_env    ?                ?               
+#> labels      list,4           list,4
 ```
 
 As seen in the reverse cumulative plot, samples without SL follow a power law distribution. In this case we use the power law normalization.
@@ -59,8 +70,26 @@ As seen in the reverse cumulative plot, samples without SL follow a power law di
 
 ce <- sapply(ce, \(x) normalizeTagCount(x, method = 'powerLaw')) |>
   suppressWarnings()
+#> 
+#> Normalizing tag count...
+#> 
+#> Normalizing tag count...
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'normalized')))
-#> list()
+```
+
+![plot of chunk plot normalized reverse cumulatives norm no](plot normalized reverse cumulatives norm no-1.png)![plot of chunk plot normalized reverse cumulatives norm no](plot normalized reverse cumulatives norm no-2.png)
+
+```
+#>             OKItoOSA         OSAtoOSA        
+#> data        data.frame,5     data.frame,5    
+#> layers      list,1           list,1          
+#> scales      ScalesList,2     ScalesList,2    
+#> mapping     uneval,3         uneval,3        
+#> theme       list,0           list,0          
+#> coordinates CoordCartesian,5 CoordCartesian,5
+#> facet       FacetWrap,3      FacetWrap,3     
+#> plot_env    ?                ?               
+#> labels      list,4           list,4
 ```
 
 After normalization, we can cluster the CTSSs. First, let's annotate the data.
@@ -74,8 +103,36 @@ Now we can find consensus clusters with the use of `quickCC()`. For SL-containin
 
 
 ```r
-ce <- sapply(ce, \(x) quickCC(x, sl_found = FALSE, gff = gff, nr_samples = 1)) |> 
+ce <- sapply(ce, \(x) quickCC(x, sl_found = FALSE, gff = gff, nr_samples = 1)) |>
   suppressWarnings()
+#> 
+#> Filtering out CTSSs below threshold...
+#> Clustering...
+#> 	-> DE1_no_T1
+#> 	-> DE2_no_T1
+#> 
+#> Calculating cumulative sum of CAGE signal along clusters...
+#> 	-> DE1_no_T1
+#> 	-> DE2_no_T1
+#> 
+#> Getting positions of quantiles within clusters...
+#> 	-> DE1_no_T1
+#> 	-> DE2_no_T1
+#> 	-> all samples grouped
+#> 
+#> Filtering out CTSSs below threshold...
+#> Clustering...
+#> 	-> D2_T1_no_T1
+#> 	-> DE1_T1_no_T1
+#> 
+#> Calculating cumulative sum of CAGE signal along clusters...
+#> 	-> D2_T1_no_T1
+#> 	-> DE1_T1_no_T1
+#> 
+#> Getting positions of quantiles within clusters...
+#> 	-> D2_T1_no_T1
+#> 	-> DE1_T1_no_T1
+#> 	-> all samples grouped
 ```
 
 Finally, we can save the CAGEexp objects and export the data to the bed format for visualisation.

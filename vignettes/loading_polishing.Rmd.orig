@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.path = ""
 )
 ```
 
@@ -75,7 +76,7 @@ Let's annotate the CTSSs and examine the proportions of sequence elements in the
 
 ```{r annotate CTSSs, fig.height=2, fig.width=6}
 
-gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |> 
+gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |>
   quickGFF()
 
 ce <- sapply(ce, \(x) annotateCTSS(x, gff)) |> suppressWarnings()

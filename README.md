@@ -35,7 +35,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> rtracklayer  (1.60.1  -> 1.62.0) [CRAN]
 #> gtools       (3.9.4   -> 3.9.5 ) [CRAN]
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpT7ZvQ8/remotes197bec31ad6d9e/charles-plessy-CAGEr-18d7295/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpZp4R1K/remotes198ebd681e38b1/charles-plessy-CAGEr-18d7295/DESCRIPTION’ ... OK
 #> * preparing ‘CAGEr’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -43,7 +43,7 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> * building ‘CAGEr_2.9.0.tar.gz’
 #> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmpT7ZvQ8/remotes197bec27b9217/a-klarkowska-CAGErAid-180aae9/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpZp4R1K/remotes198ebd2c26c46d/a-klarkowska-CAGErAid-e14de76/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
@@ -101,7 +101,7 @@ ce <- CAGEr::annotateCTSS(ce, gff)
 ```
 
 For more details on the cross-alignments analysis workflow, consult the
-vignettes on [loading](vignettes/loading.Rmd) the data, [polishing it
-and basic stats analysis](vignettes/polishing.Rmd), and clustering of
+vignettes on [loading the data, polishing it and basic stats
+analysis](vignettes/loading_polishing.Rmd), and clustering of
 [SL-containing samples](vignettes/clustering_sl.Rmd) and [samples
 without SL](vignettes/clustering_no.Rmd).
