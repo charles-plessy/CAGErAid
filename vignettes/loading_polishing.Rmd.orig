@@ -56,7 +56,7 @@ sapply(ce, \(x) colData(x))
 
 After adding the statistics metadata from the pipeline, we can visualise them to compare the levels of aligned reads to the genome.
 
-```{r plot stats, fig.height=2, fig.width=6}
+```{r plot stats, fig.height=3, fig.width=10}
 
 plotAnnot_ <- function(name)
   CAGEr::plotAnnot(ce[[name]], msScope_nfcore_rnaseq, group = 'RNA', facet = 'SLfactor', norm = FALSE) +
@@ -74,7 +74,7 @@ There are noticeably less Okinawa reads mapped to the Osaka genome, but there is
 
 Let's annotate the CTSSs and examine the proportions of sequence elements in the data, starting with loading the GFF file with `quickGFF()`:
 
-```{r annotate CTSSs, fig.height=2, fig.width=6}
+```{r annotate CTSSs, fig.height=3, fig.width=10}
 
 gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |>
   quickGFF()
@@ -99,7 +99,7 @@ for (name in names(ce)) plot(plotAnnot_(name))
 
 ```
 
-```{r set colors and plot reverse cumulatives, fig.height=4, fig.width=6}
+```{r set colors and plot reverse cumulatives, fig.height=5, fig.width=10}
 colors <- c('blue', 'red', 'blue', 'red')
 ce <- sapply(ce, \(x) setColors(x, colors))
 
