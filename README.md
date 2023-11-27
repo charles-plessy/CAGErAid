@@ -19,11 +19,8 @@ You can install the development version of CAGErAid from
 ``` r
 # install.packages("devtools")
 devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
-#> Downloading GitHub repo a-klarkowska/CAGErAid@HEAD
 #> CAGEr (a9d5ab24d... -> 18d72958c...) [GitHub]
-#> Skipping 4 packages not available: SummarizedExperiment, S4Vectors, rtracklayer, BiocGenerics
-#> Downloading GitHub repo charles-plessy/CAGEr@HEAD
-#> S4Vectors    (0.38.2  -> 0.40.1) [CRAN]
+#> S4Vectors    (0.38.2  -> 0.40.2) [CRAN]
 #> GenomicRa... (1.52.1  -> 1.54.1) [CRAN]
 #> stringi      (1.7.12  -> 1.8.2 ) [CRAN]
 #> tinytex      (0.48    -> 0.49  ) [CRAN]
@@ -37,34 +34,35 @@ devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessa
 #> stringr      (1.5.0   -> 1.5.1 ) [CRAN]
 #> rtracklayer  (1.60.1  -> 1.62.0) [CRAN]
 #> gtools       (3.9.4   -> 3.9.5 ) [CRAN]
-#> Installing 14 packages: S4Vectors, GenomicRanges, stringi, tinytex, bslib, htmlwidgets, deldir, htmltools, VariantAnnotation, Gviz, dplyr, stringr, rtracklayer, gtools
-#> Installing packages into '/tmp/RtmplAu8Cb/temp_libpath13ff49c27ca3b'
-#> (as 'lib' is unspecified)
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmphycGnd/remotes1417ee1dcb932c/charles-plessy-CAGEr-18d7295/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpT7ZvQ8/remotes197bec31ad6d9e/charles-plessy-CAGEr-18d7295/DESCRIPTION’ ... OK
 #> * preparing ‘CAGEr’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
 #> * checking for empty or unneeded directories
 #> * building ‘CAGEr_2.9.0.tar.gz’
-#> Installing package into '/tmp/RtmplAu8Cb/temp_libpath13ff49c27ca3b'
-#> (as 'lib' is unspecified)
+#> 
 #> ── R CMD build ─────────────────────────────────────────────────────────────────
-#> * checking for file ‘/tmp/RtmphycGnd/remotes1417ee2a957217/a-klarkowska-CAGErAid-51510db/DESCRIPTION’ ... OK
+#> * checking for file ‘/tmp/RtmpT7ZvQ8/remotes197bec27b9217/a-klarkowska-CAGErAid-180aae9/DESCRIPTION’ ... OK
 #> * preparing ‘CAGErAid’:
 #> * checking DESCRIPTION meta-information ... OK
 #> * checking for LF line-endings in source and make files and shell scripts
 #> * checking for empty or unneeded directories
-#> Removed empty directory ‘CAGErAid/vignettes’
 #> * looking to see if a ‘data/datalist’ file should be added
 #>   NB: this package now depends on R (>= 3.5.0)
 #>   WARNING: Added dependency on R >= 3.5.0 because serialized objects in
 #>   serialize/load version 3 cannot be read in older versions of R.
 #>   File(s) containing such objects:
 #>     ‘CAGErAid/inst/extdata/ce_clean.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OKItoOSA.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OKItoOSA_SL.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OKItoOSA_no.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OKItoOSA_polished.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OSAtoOSA.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OSAtoOSA_SL.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OSAtoOSA_no.rds’
+#>     ‘CAGErAid/inst/extdata/example_CAGEexp/OSAtoOSA_polished.rds’
 #> * building ‘CAGErAid_0.0.0.9000.tar.gz’
-#> Installing package into '/tmp/RtmplAu8Cb/temp_libpath13ff49c27ca3b'
-#> (as 'lib' is unspecified)
 ```
 
 ## Polishing data

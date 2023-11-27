@@ -24,7 +24,7 @@ The goal of CAGErAid is to assist in using [CAGEr](https://rdrr.io/bioc/CAGEr/) 
 
 You can install the development version of CAGErAid from [GitHub](https://github.com/) with:
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 # install.packages("devtools")
 devtools::install_github('a-klarkowska/CAGErAid') |> suppressPackageStartupMessages()
 

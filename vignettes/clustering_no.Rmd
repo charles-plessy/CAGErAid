@@ -2,19 +2,15 @@
 title: "Clustering (no SL)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{clustering_no}
+  %\VignetteIndexEntry{Clustering (no SL)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
 
-```{r setup}
+
+
+```r
 library(CAGErAid) |> suppressPackageStartupMessages()
 library('CAGEr') |> suppressPackageStartupMessages()
 library('ggplot2'); theme_set(theme_bw())
@@ -22,69 +18,66 @@ library('ggplot2'); theme_set(theme_bw())
 
 Let's load in the polished data from [the previous vignette](vignettes/loading_polishing.Rmd):
 
-```{r load in data}
+
+```r
 ce_path <- system.file("extdata/example_CAGEexp", package="CAGErAid") |>
   list.files(pattern = '*toOSA_polished*', full.names = TRUE)
 
 ce <- SimpleList()
 ce$OKItoOSA <- readRDS(ce_path[1])
+#> Error in gzfile(file, "rb"): invalid 'description' argument
 ce$OSAtoOSA <- readRDS(ce_path[2])
+#> Error in gzfile(file, "rb"): invalid 'description' argument
 ```
 
 Let's also load in the GFF file for annotating clusters:
 
-```{r load in GFF}
+
+```r
 gff <- system.file("extdata", "Osaka.gtf", package="CAGErAid") |> 
   quickGFF()
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'con' in selecting a method for function 'import': Cannot detect format (no extension found in file name)
 ```
 
 We separate samples without SL and check for power law distribution.
 
-```{r plot reverse cumulatives}
+
+```r
 
 for (i in names(ce)) {
   ce[[i]] <- ce[[i]][, !ce[[i]]$SLfound]
 }
 
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'raw')))
-
+#> list()
 ```
 
 As seen in the reverse cumulative plot, samples without SL follow a power law distribution. In this case we use the power law normalization.
 
-```{r}
+
+```r
 
 ce <- sapply(ce, \(x) normalizeTagCount(x, method = 'powerLaw')) |>
   suppressWarnings()
 sapply(ce, \(x) plot(plotReverseCumulatives(x, fitInRange = NULL, values = 'normalized')))
-
+#> list()
 ```
 
 After normalization, we can cluster the CTSSs. First, let's annotate the data.
 
-```{r annotate}
+
+```r
 ce <- sapply(ce, \(x) annotateCTSS(x, gff)) |> suppressWarnings()
 ```
 
 Now we can find consensus clusters with the use of `quickCC()`. For SL-containing samples, the function uses the paraclu algorithm.
 
-```{r consensus clusters}
+
+```r
 ce <- sapply(ce, \(x) quickCC(x, sl_found = FALSE, gff = gff, nr_samples = 1)) |> 
   suppressWarnings()
 ```
 
-Finally, we can save the CAGEexp objects and export the data to the bed format for visualisation:
+Finally, we can save the CAGEexp objects and export the data to the bed format for visualisation.
 
-```{r save and export}
-saveRDS(ce$OKItoOSA, file = './inst/extdata/example_CAGEexp/OKItoOSA_no.rds')
-saveRDS(ce$OSAtoOSA, file = './inst/extdata/example_CAGEexp/OSAtoOSA_no.rds')
 
-for (i in names(ce)) {
-  cctrack <- makeBed(ce[[i]], sl_found = TRUE)
-  cctrack[cctrack$itemRgb == "black"] |> score() |> decode() |> log10() |> hist(br =
-                                                                                 100)
-  cctrack[cctrack$itemRgb == "grey"]  |> score() |> decode() |> log10() |> hist(br =
-                                                                                 100)
-  rtracklayer::export.bed(cctrack, paste0('./inst/extdata/example_CAGEexp/clusters_no_', i, '.bed'))
-  }
-```
